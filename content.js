@@ -294,7 +294,7 @@
     metricsHtml += `
       </div>
       <div class="tv-tooltip-footer">
-        <span class="tv-tooltip-score">Trust Score: ${trust.score}/${trust.maxScore}</span>
+        <span class="tv-tooltip-score">Trust Score: ${trust.percent}%</span>
       </div>
     `;
 

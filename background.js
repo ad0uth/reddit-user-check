@@ -287,7 +287,8 @@ function computeTrustScore(about, comments) {
   else if (score >= 5) level = 'yellow';
   else level = 'red';
 
-  return { score, maxScore: 12, level, flags };
+  const percent = Math.round((score / 12) * 100);
+  return { score, maxScore: 12, percent, level, flags };
 }
 
 // --- Message handling ---
