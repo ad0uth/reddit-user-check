@@ -1,4 +1,4 @@
-// Reddit User Insight - Content Script
+// User Insight for Reddit - Content Script
 // Detects usernames on the page and injects trust badges + hover tooltips
 
 (function () {
@@ -367,7 +367,7 @@
 
     } catch (err) {
       // Silently fail - don't break Reddit
-      console.debug('[Reddit User Insight] Error fetching', username, err);
+      console.debug('[User Insight for Reddit] Error fetching', username, err);
     }
   }
 

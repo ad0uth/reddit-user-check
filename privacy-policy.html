@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy - User Insight for Reddit</title>
+  <style>
+    body {
+      max-width: 680px;
+      margin: 40px auto;
+      padding: 0 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+    h1 { font-size: 24px; margin-bottom: 4px; }
+    .subtitle { color: #666; font-size: 14px; margin-bottom: 32px; }
+    h2 { font-size: 18px; margin-top: 28px; margin-bottom: 8px; }
+    p, li { font-size: 15px; }
+    ul { padding-left: 20px; }
+    li { margin-bottom: 6px; }
+    .updated { color: #999; font-size: 13px; margin-top: 40px; border-top: 1px solid #eee; padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p class="subtitle">User Insight for Reddit &mdash; Chrome Extension</p>
+
+  <h2>What data we access</h2>
+  <p>This extension accesses publicly available information from Reddit's public API:</p>
+  <ul>
+    <li>Account age and creation date</li>
+    <li>Karma scores (comment and post karma)</li>
+    <li>Recent comment history (last 30 comments) — used to calculate subreddit diversity and comment variety</li>
+  </ul>
+  <p>This is the same information visible on any Reddit user's public profile page. No private data, direct messages, or account credentials are accessed.</p>
+
+  <h2>How data is stored</h2>
+  <ul>
+    <li>All data is cached <strong>locally on your device</strong> using Chrome's built-in storage (<code>chrome.storage.local</code>).</li>
+    <li>Cached data automatically expires after <strong>24 hours</strong>.</li>
+    <li>You can clear all cached data at any time from the extension popup.</li>
+  </ul>
+
+  <h2>What we do NOT do</h2>
+  <ul>
+    <li>We do <strong>not</strong> collect, transmit, or sell any personal data.</li>
+    <li>We do <strong>not</strong> send data to any external server or third party.</li>
+    <li>We do <strong>not</strong> use analytics, tracking, or telemetry of any kind.</li>
+    <li>We do <strong>not</strong> access your Reddit account, credentials, or cookies.</li>
+    <li>We do <strong>not</strong> modify any Reddit content or interact with Reddit on your behalf.</li>
+  </ul>
+
+  <h2>Permissions</h2>
+  <p>The extension requests the following permissions:</p>
+  <ul>
+    <li><strong>storage</strong> — to cache API responses locally and save your settings.</li>
+    <li><strong>Host permissions for reddit.com</strong> — to display badges on Reddit pages and fetch public API data.</li>
+  </ul>
+
+  <h2>Contact</h2>
+  <p>If you have questions about this privacy policy, please open an issue on the project's GitHub repository.</p>
+
+  <p class="updated">Last updated: February 2026</p>
+</body>
+</html>

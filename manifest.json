@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Reddit User Insight",
+  "name": "User Insight for Reddit",
   "version": "1.0.0",
-  "description": "Shows account age, karma, and behavior patterns next to Reddit usernames to help spot bots and sponsored accounts.",
+  "description": "See account age, karma, and activity patterns next to every Reddit username at a glance.",
   "permissions": [
     "storage"
   ],

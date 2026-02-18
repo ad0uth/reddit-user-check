@@ -1,4 +1,4 @@
-// Reddit User Insight - Background Service Worker
+// User Insight for Reddit - Background Service Worker
 // Handles Reddit API calls and caching
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours

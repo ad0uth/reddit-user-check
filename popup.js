@@ -1,4 +1,4 @@
-// Reddit User Insight - Popup Script
+// User Insight for Reddit - Popup Script
 
 const defaults = {
   enabled: true,

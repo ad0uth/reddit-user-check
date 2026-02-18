@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reddit User Insight</title>
+  <title>User Insight for Reddit</title>
   <style>
     * {
       margin: 0;
@@ -20,7 +20,7 @@
 
     .popup-header {
       padding: 16px;
-      background: linear-gradient(135deg, #ff4500, #ff6634);
+      background: linear-gradient(135deg, #4A90D9, #6C5CE7);
       color: #fff;
     }
 
@@ -103,7 +103,7 @@
     }
 
     .toggle input:checked + .toggle-slider {
-      background: #ff4500;
+      background: #4A90D9;
     }
 
     .toggle input:checked + .toggle-slider::before {
@@ -174,13 +174,35 @@
       text-align: center;
       font-size: 11px;
       color: #999;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .coffee-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 5px 12px;
+      background: #FFDD00;
+      color: #000;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+
+    .coffee-link:hover {
+      background: #e6c800;
     }
   </style>
 </head>
 <body>
   <div class="popup-header">
-    <h1>Reddit User Insight</h1>
-    <p>Spot bots and sponsored accounts at a glance</p>
+    <h1>User Insight for Reddit</h1>
+    <p>See account age, karma, and activity patterns at a glance</p>
   </div>
 
   <div class="popup-body">
@@ -218,19 +240,19 @@
     </div>
 
     <div class="popup-section">
-      <h2>Trust Indicators</h2>
+      <h2>Indicators</h2>
       <div class="legend">
         <div class="legend-item">
           <span class="legend-dot legend-dot--green"></span>
-          <span>Looks genuine &mdash; established account, diverse activity</span>
+          <span>Established &mdash; active account with diverse history</span>
         </div>
         <div class="legend-item">
           <span class="legend-dot legend-dot--yellow"></span>
-          <span>Some flags &mdash; newer account or limited activity</span>
+          <span>Limited &mdash; newer account or narrow activity</span>
         </div>
         <div class="legend-item">
           <span class="legend-dot legend-dot--red"></span>
-          <span>Suspicious &mdash; new, low karma, repetitive comments</span>
+          <span>New &mdash; very new, low karma, or repetitive</span>
         </div>
       </div>
     </div>
@@ -239,7 +261,10 @@
   </div>
 
   <div class="popup-footer">
-    v1.0.0 &middot; Data from Reddit's public API
+    <span>v1.0.0 &middot; Data from Reddit's public API</span>
+    <a class="coffee-link" href="https://buymeacoffee.com/" target="_blank" rel="noopener">
+      Buy me a coffee
+    </a>
   </div>
 
   <script src="popup.js"></script>
