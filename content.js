@@ -157,6 +157,16 @@
     }
   }
 
+  // --- Helpers ---
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
   // --- Tooltip ---
 
   function createTooltip(username, about, comments, trust) {
@@ -176,10 +186,24 @@
     };
     const levelLabel = levelLabels[trust.level] || 'Unknown';
 
+    // Avatar — clean up Reddit's noisy icon URL query params
+    const avatarUrl = about.iconUrl
+      ? about.iconUrl.replace(/\?.*$/, '') // strip query string (size/format params)
+      : null;
+
+    const userBadgesHtml = [
+      about.isMod  ? '<span class="tv-user-badge tv-user-badge--mod">MOD</span>'  : '',
+      about.isGold ? '<span class="tv-user-badge tv-user-badge--gold">GOLD</span>' : ''
+    ].join('');
+
     // Build metrics rows
     let metricsHtml = `
       <div class="tv-tooltip-header">
-        <span class="tv-tooltip-username">u/${about.name}</span>
+        ${avatarUrl ? `<img class="tv-avatar" src="${avatarUrl}" alt="">` : ''}
+        <div class="tv-tooltip-user">
+          <span class="tv-tooltip-username">u/${escapeHtml(about.name)}</span>
+          ${userBadgesHtml ? `<div class="tv-user-badges">${userBadgesHtml}</div>` : ''}
+        </div>
         <span class="tv-tooltip-trust tv-trust--${trust.level}">${levelLabel}</span>
       </div>
       <div class="tv-tooltip-divider"></div>
@@ -247,6 +271,23 @@
       metricsHtml += `
         <div class="tv-tooltip-divider"></div>
         <div class="tv-flags">${flagsHtml}</div>
+      `;
+    }
+
+    // Sample recent comments
+    if (comments && comments.sampleComments && comments.sampleComments.length > 0) {
+      const samplesHtml = comments.sampleComments.map(c => `
+        <div class="tv-sample-comment">
+          <span class="tv-sample-sub">r/${escapeHtml(c.subreddit)}</span>
+          <span class="tv-sample-text">${escapeHtml(c.text)}</span>
+        </div>
+      `).join('');
+      metricsHtml += `
+        <div class="tv-tooltip-divider"></div>
+        <div class="tv-metric">
+          <span class="tv-metric-label">Recent Comments</span>
+          <div class="tv-sample-comments">${samplesHtml}</div>
+        </div>
       `;
     }
 

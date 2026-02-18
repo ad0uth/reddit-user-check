@@ -248,6 +248,20 @@ function computeTrustScore(about, comments) {
   else if (about.totalKarma >= 100) { score += 1; }
   else { flags.push('Very low karma'); }
 
+  // Verified email (+1 point — unverified is a mild red flag)
+  if (about.hasVerifiedEmail) { score += 1; }
+
+  // Link-to-comment karma ratio: high link karma vs near-zero comment karma
+  // is a classic pattern for accounts that submit promotional links but don't discuss
+  if (about.linkKarma > about.commentKarma * 5 && about.linkKarma > 1000) {
+    flags.push('High link-to-comment ratio');
+  }
+
+  // Username pattern: 4+ trailing digits is a common bot/sock-puppet pattern
+  if (/\d{4,}$/.test(about.name)) {
+    flags.push('Generic username pattern');
+  }
+
   // Subreddit diversity (0-3 points)
   if (comments) {
     if (comments.uniqueSubreddits >= 8) { score += 3; }
@@ -266,14 +280,14 @@ function computeTrustScore(about, comments) {
     }
   }
 
-  // Max possible: 11 points
-  // Green: 7+, Yellow: 4-6, Red: 0-3
+  // Max possible: 12 points (+1 from verified email vs old 11)
+  // Green: 8+, Yellow: 5-7, Red: 0-4
   let level;
-  if (score >= 7) level = 'green';
-  else if (score >= 4) level = 'yellow';
+  if (score >= 8) level = 'green';
+  else if (score >= 5) level = 'yellow';
   else level = 'red';
 
-  return { score, maxScore: 11, level, flags };
+  return { score, maxScore: 12, level, flags };
 }
 
 // --- Message handling ---

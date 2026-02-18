@@ -158,14 +158,58 @@ html[data-darkreader-scheme="dark"] .tv-tooltip {
 .tv-tooltip-header {
   display: flex;
   align-items: center;
+  gap: 8px;
   justify-content: space-between;
   margin-bottom: 8px;
+}
+
+/* Avatar */
+.tv-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Username + mod/gold row */
+.tv-tooltip-user {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
 }
 
 .tv-tooltip-username {
   font-weight: 600;
   font-size: 14px;
   color: inherit;
+}
+
+.tv-user-badges {
+  display: flex;
+  gap: 4px;
+}
+
+.tv-user-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.tv-user-badge--mod {
+  background: rgba(70, 209, 96, 0.15);
+  color: #1a7f37;
+}
+
+.tv-user-badge--gold {
+  background: rgba(240, 180, 41, 0.2);
+  color: #9a6700;
 }
 
 .tv-tooltip-trust {
@@ -328,6 +372,62 @@ html[data-darkreader-scheme="dark"] .tv-tooltip {
   font-size: 11px;
   color: #787c7e;
   font-weight: 500;
+}
+
+/* Sample recent comments */
+.tv-sample-comments {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.tv-sample-comment {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 7px;
+  background: #f6f7f8;
+  border-radius: 5px;
+}
+
+.tv-sample-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: #0079d3;
+}
+
+.tv-sample-text {
+  font-size: 11px;
+  color: #3c3c3c;
+  line-height: 1.4;
+}
+
+/* Dark mode additions */
+@media (prefers-color-scheme: dark) {
+  .tv-avatar {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .tv-user-badge--mod {
+    color: #56d364;
+  }
+
+  .tv-user-badge--gold {
+    color: #e3b341;
+  }
+
+  .tv-sample-comment {
+    background: #272729;
+  }
+
+  .tv-sample-sub {
+    color: #5f9eff;
+  }
+
+  .tv-sample-text {
+    color: #b0b3b5;
+  }
 }
 
 /* Tooltip scrollbar */
