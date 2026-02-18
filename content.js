@@ -369,9 +369,9 @@
 
   // --- Data fetching pipeline ---
 
-  async function fetchAndProcess(username, badge) {
+  // Phase 1: Fetch about data only (fast — one API call per user)
+  async function fetchAboutAndScore(username, badge) {
     try {
-      // Phase 1: Quick about fetch
       const aboutRes = await chrome.runtime.sendMessage({
         type: 'fetchUserAbout',
         username
@@ -380,35 +380,43 @@
       if (!aboutRes?.ok) return;
       const about = aboutRes.data;
 
-      // Store partial data immediately
-      userDataCache.set(username, { about, comments: null, trust: null });
+      // Preliminary trust score from about data alone
+      const trustRes = await chrome.runtime.sendMessage({
+        type: 'computeQuickTrust',
+        about
+      });
+      const trust = trustRes?.ok ? trustRes.data : { score: 0, maxScore: 12, percent: 0, level: 'yellow', flags: [] };
 
-      // Phase 2: Fetch comments for deeper analysis
+      userDataCache.set(username, { about, comments: null, trust });
+      updateBadge(badge, about, trust.level);
+    } catch (err) {
+      console.debug('[TrueVoice] Error fetching about for', username, err);
+    }
+  }
+
+  // Phase 2: Fetch comments and refine trust score (on hover)
+  async function fetchCommentsAndRefine(username, badge) {
+    const cached = userDataCache.get(username);
+    if (!cached?.about || cached.comments) return; // already done or no about data
+
+    try {
       const commentsRes = await chrome.runtime.sendMessage({
         type: 'fetchUserComments',
         username
       });
-
       const comments = commentsRes?.ok ? commentsRes.data : null;
 
-      // Phase 3: Compute trust score
       const trustRes = await chrome.runtime.sendMessage({
         type: 'computeTrustScore',
-        about,
+        about: cached.about,
         comments
       });
+      const trust = trustRes?.ok ? trustRes.data : cached.trust;
 
-      const trust = trustRes?.ok ? trustRes.data : { score: 0, maxScore: 11, level: 'yellow', flags: [] };
-
-      // Update cache
-      userDataCache.set(username, { about, comments, trust });
-
-      // Update badge with real data and trust color
-      updateBadge(badge, about, trust.level);
-
+      userDataCache.set(username, { about: cached.about, comments, trust });
+      updateBadge(badge, cached.about, trust.level);
     } catch (err) {
-      // Silently fail - don't break Reddit
-      console.debug('[TrueVoice] Error fetching', username, err);
+      console.debug('[TrueVoice] Error fetching comments for', username, err);
     }
   }
 
@@ -431,9 +439,11 @@
       // Insert badge after the username link
       el.after(badge);
 
-      // Set up hover events for tooltip
+      // Set up hover events for tooltip + lazy comment fetch
       if (settings.showTooltip) {
         const showHandler = () => {
+          // Trigger Phase 2 (comments) on hover
+          fetchCommentsAndRefine(username, badge);
           tooltipTimeout = setTimeout(() => showTooltip(badge, username), 300);
         };
         const hideHandler = () => {
@@ -447,12 +457,12 @@
         el.addEventListener('mouseleave', hideHandler);
       }
 
-      // Fetch data using IntersectionObserver for lazy loading
+      // Phase 1: Fetch about data when badge enters viewport
       const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             obs.unobserve(entry.target);
-            fetchAndProcess(username, badge);
+            fetchAboutAndScore(username, badge);
           }
         });
       }, { rootMargin: '200px' });
