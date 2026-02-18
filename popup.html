@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reddit User Insight</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 300px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1a1a1b;
+      background: #fff;
+    }
+
+    .popup-header {
+      padding: 16px;
+      background: linear-gradient(135deg, #ff4500, #ff6634);
+      color: #fff;
+    }
+
+    .popup-header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .popup-header p {
+      font-size: 11px;
+      opacity: 0.85;
+    }
+
+    .popup-body {
+      padding: 16px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+
+    .setting-label {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .setting-label span:first-child {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .setting-label span:last-child {
+      font-size: 11px;
+      color: #787c7e;
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #ccc;
+      border-radius: 22px;
+      transition: 0.2s;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+
+    .toggle input:checked + .toggle-slider {
+      background: #ff4500;
+    }
+
+    .toggle input:checked + .toggle-slider::before {
+      transform: translateX(18px);
+    }
+
+    .popup-section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .popup-section h2 {
+      font-size: 12px;
+      font-weight: 600;
+      color: #787c7e;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-dot--green { background: #46d160; }
+    .legend-dot--yellow { background: #f0b429; }
+    .legend-dot--red { background: #e5534b; }
+
+    .clear-cache-btn {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 8px;
+      background: #f6f7f8;
+      border: 1px solid #edeff1;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #576f76;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-family: inherit;
+    }
+
+    .clear-cache-btn:hover {
+      background: #edeff1;
+    }
+
+    .popup-footer {
+      padding: 10px 16px;
+      border-top: 1px solid #f0f0f0;
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="popup-header">
+    <h1>Reddit User Insight</h1>
+    <p>Spot bots and sponsored accounts at a glance</p>
+  </div>
+
+  <div class="popup-body">
+    <div class="setting-row">
+      <div class="setting-label">
+        <span>Enable Extension</span>
+        <span>Show badges next to usernames</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="setting-enabled" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-label">
+        <span>Show Badges</span>
+        <span>Inline age and karma tags</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="setting-badges" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <div class="setting-label">
+        <span>Show Tooltips</span>
+        <span>Detailed breakdown on hover</span>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="setting-tooltips" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="popup-section">
+      <h2>Trust Indicators</h2>
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-dot legend-dot--green"></span>
+          <span>Looks genuine &mdash; established account, diverse activity</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-dot--yellow"></span>
+          <span>Some flags &mdash; newer account or limited activity</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-dot--red"></span>
+          <span>Suspicious &mdash; new, low karma, repetitive comments</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="clear-cache-btn" id="clear-cache">Clear Cached Data</button>
+  </div>
+
+  <div class="popup-footer">
+    v1.0.0 &middot; Data from Reddit's public API
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
