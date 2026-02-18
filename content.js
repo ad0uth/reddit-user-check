@@ -80,33 +80,48 @@
     return null;
   }
 
+  // Track which containers already have a badge for a given username
+  const badgedContainers = new WeakMap(); // container -> Set<username>
+
   // --- Username selectors for different Reddit versions ---
 
   function getUsernameElements() {
-    const selectors = [
-      // New Reddit (redesign)
-      'a[href*="/user/"]',
-      'a[href*="/u/"]',
-    ];
-
-    const allLinks = document.querySelectorAll(selectors.join(', '));
+    const allLinks = document.querySelectorAll('a[href*="/user/"], a[href*="/u/"]');
     const usernameLinks = [];
 
     for (const link of allLinks) {
       // Skip if already processed
       if (processedElements.has(link)) continue;
 
-      // Skip navigation, sidebar profile links, and non-comment author links
       const href = link.getAttribute('href') || '';
       if (!href.match(/\/u(?:ser)?\/[A-Za-z0-9_-]+\/?$/)) continue;
 
       // Skip links inside our own badges/tooltips
       if (link.closest('.rui-badge, .rui-tooltip')) continue;
 
-      // Skip AutoModerator and bots we know about
+      // Must contain visible username text (not just an avatar/icon)
+      const text = link.textContent.trim();
+      if (!text || text.length < 2) continue;
+      // Should look like a username — starts with "u/" or matches the username from href
       const username = extractUsername(link);
       if (!username) continue;
+      if (!text.includes(username) && !text.startsWith('u/')) continue;
+
       if (['AutoModerator', '[deleted]', 'reddit'].includes(username)) continue;
+
+      // Prevent duplicate badges in the same comment/post container
+      const container = link.closest('shreddit-comment, shreddit-post, .comment, .thing, .Comment, [data-testid="comment"], [data-testid="post-container"], article') || link.parentElement;
+      if (container) {
+        if (!badgedContainers.has(container)) {
+          badgedContainers.set(container, new Set());
+        }
+        const userSet = badgedContainers.get(container);
+        if (userSet.has(username)) {
+          processedElements.add(link);
+          continue; // Already have a badge for this user in this container
+        }
+        userSet.add(username);
+      }
 
       usernameLinks.push(link);
     }
@@ -116,25 +131,29 @@
 
   // --- Badge creation ---
 
-  function createBadge(about) {
+  function createBadge(username) {
     const badge = document.createElement('span');
-    badge.className = 'rui-badge';
-    badge.dataset.username = about.name;
+    badge.className = 'rui-badge rui-badge--loading';
+    badge.dataset.username = username;
 
-    const age = formatAge(about.created);
-    const karma = formatKarma(about.totalKarma);
-
-    // Initial badge with just age + karma (trust color set after comment analysis)
-    badge.innerHTML = `<span class="rui-dot rui-dot--pending"></span><span class="rui-badge-text">${age} · ${karma}</span>`;
+    // Start with just a loading dot — no text until data arrives
+    badge.innerHTML = `<span class="rui-dot rui-dot--pending"></span><span class="rui-badge-text"></span>`;
 
     return badge;
   }
 
-  function updateBadgeColor(badge, level) {
+  function updateBadge(badge, about, level) {
+    badge.classList.remove('rui-badge--loading');
+
     const dot = badge.querySelector('.rui-dot');
     if (dot) {
       dot.classList.remove('rui-dot--pending');
       dot.classList.add(`rui-dot--${level}`);
+    }
+
+    const text = badge.querySelector('.rui-badge-text');
+    if (text) {
+      text.textContent = `${formatAge(about.created)} · ${formatKarma(about.totalKarma)}`;
     }
   }
 
@@ -343,8 +362,8 @@
       // Update cache
       userDataCache.set(username, { about, comments, trust });
 
-      // Update badge color
-      updateBadgeColor(badge, trust.level);
+      // Update badge with real data and trust color
+      updateBadge(badge, about, trust.level);
 
     } catch (err) {
       // Silently fail - don't break Reddit
@@ -365,12 +384,8 @@
       const username = extractUsername(el);
       if (!username) continue;
 
-      // Create and insert badge
-      const badge = createBadge({
-        name: username,
-        created: 0,
-        totalKarma: 0
-      });
+      // Create and insert badge (loading state, no data yet)
+      const badge = createBadge(username);
 
       // Insert badge after the username link
       el.after(badge);
