@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate Chrome Web Store promotional tile (440x280) for User Insight for Reddit.
+"""Generate Chrome Web Store promotional tile (440x280) for TrueVoice for Reddit.
 Uses only stdlib - no external dependencies."""
 
 import struct
@@ -34,10 +34,10 @@ def lerp_color(c1, c2, t):
 
 
 # Brand colors
-BRAND_PRIMARY = (74, 144, 217)
-BRAND_SECONDARY = (108, 92, 231)
-BG_DARK = (30, 33, 58)
-BG_MID = (40, 45, 75)
+BRAND_PRIMARY = (59, 130, 246)
+BRAND_SECONDARY = (139, 92, 246)
+BG_DARK = (20, 24, 48)
+BG_MID = (35, 40, 70)
 WHITE = (255, 255, 255)
 TRUST_GREEN = (70, 209, 96)
 TRUST_YELLOW = (240, 180, 41)
@@ -84,13 +84,10 @@ def draw_promo(width, height):
         """Draw a filled rounded rectangle."""
         for y in range(max(0, int(y1)), min(height, int(y2))):
             for x in range(max(0, int(x1)), min(width, int(x2))):
-                # Check if inside the rounded rect
                 inside = False
-                # Main body (excluding corners)
                 if x1 + radius <= x <= x2 - radius or y1 + radius <= y <= y2 - radius:
                     inside = True
                 else:
-                    # Check corners
                     corners = [
                         (x1 + radius, y1 + radius),
                         (x2 - radius, y1 + radius),
@@ -105,6 +102,22 @@ def draw_promo(width, height):
                 if inside:
                     set_pixel(x, y, r, g, b, a)
 
+    def draw_line(x1, y1, x2, y2, r, g, b, thick):
+        length = math.sqrt((x2-x1)**2 + (y2-y1)**2)
+        if length == 0:
+            return
+        steps = int(length * 3) + 1
+        for i in range(steps + 1):
+            t = i / steps
+            lx = x1 + (x2 - x1) * t
+            ly = y1 + (y2 - y1) * t
+            for dy in range(-int(thick)-1, int(thick)+2):
+                for dx in range(-int(thick)-1, int(thick)+2):
+                    if dx*dx + dy*dy <= thick * thick:
+                        px, py = int(lx + dx), int(ly + dy)
+                        if 0 <= px < width and 0 <= py < height:
+                            set_pixel(px, py, r, g, b)
+
     # --- Background: dark gradient ---
     for y in range(height):
         for x in range(width):
@@ -112,16 +125,16 @@ def draw_promo(width, height):
             c = lerp_color(BG_DARK, BG_MID, t)
             set_pixel(x, y, c[0], c[1], c[2], 255)
 
-    # Subtle gradient accent stripe across top
+    # Gradient accent stripe across top
     for y in range(0, 4):
         for x in range(width):
             t = x / width
             c = lerp_color(BRAND_PRIMARY, BRAND_SECONDARY, t)
             set_pixel(x, y, c[0], c[1], c[2], 255)
 
-    # --- Icon (smaller version, left side) ---
+    # --- Icon (speech bubble with checkmark, left side) ---
     icon_cx = 100
-    icon_cy = 120
+    icon_cy = 115
     icon_r = 50
 
     # Icon background circle with gradient
@@ -137,56 +150,55 @@ def draw_promo(width, height):
                 else:
                     set_pixel(x, y, c[0], c[1], c[2], 255)
 
-    # Lens circle (white)
-    lens_cx = icon_cx - 5
-    lens_cy = icon_cy - 5
-    lens_r = 28
-    draw_circle_filled(lens_cx, lens_cy, lens_r, 255, 255, 255, 255)
+    # Speech bubble inside icon (white rounded rect)
+    b_cx, b_cy = icon_cx, icon_cy - 4
+    b_hw, b_hh = 28, 18
+    b_r = 7
+    for y in range(max(0, int(b_cy - b_hh - 1)), min(height, int(b_cy + b_hh + 12))):
+        for x in range(max(0, int(b_cx - b_hw - 1)), min(width, int(b_cx + b_hw + 1))):
+            px = x - b_cx
+            py = y - b_cy
+            inside = False
+            if abs(px) <= b_hw - b_r and abs(py) <= b_hh:
+                inside = True
+            elif abs(px) <= b_hw and abs(py) <= b_hh - b_r:
+                inside = True
+            else:
+                for ccx, ccy in [(b_cx - b_hw + b_r, b_cy - b_hh + b_r),
+                                  (b_cx + b_hw - b_r, b_cy - b_hh + b_r),
+                                  (b_cx - b_hw + b_r, b_cy + b_hh - b_r),
+                                  (b_cx + b_hw - b_r, b_cy + b_hh - b_r)]:
+                    if math.sqrt((x - ccx)**2 + (y - ccy)**2) <= b_r:
+                        inside = True
+                        break
+            if inside:
+                set_pixel(x, y, 255, 255, 255, 255)
 
-    # Lens border
-    for y in range(max(0, int(lens_cy-lens_r-3)), min(height, int(lens_cy+lens_r+3))):
-        for x in range(max(0, int(lens_cx-lens_r-3)), min(width, int(lens_cx+lens_r+3))):
-            dist = math.sqrt((x - lens_cx)**2 + (y - lens_cy)**2)
-            if lens_r - 2 <= dist <= lens_r + 1:
-                edge = min(dist - (lens_r - 2), (lens_r + 1) - dist)
-                a = min(255, int(edge * 200))
-                set_pixel(x, y, 45, 55, 120, a)
+    # Bubble tail
+    for y in range(int(b_cy + b_hh), int(b_cy + b_hh + 8)):
+        progress = (y - (b_cy + b_hh)) / 8
+        left = b_cx - 8 - 4 * progress
+        right = b_cx - 2 - 2 * progress
+        for x in range(max(0, int(left)), min(width, int(right))):
+            set_pixel(x, y, 255, 255, 255, 255)
 
-    # User silhouette head
-    draw_circle_filled(lens_cx, lens_cy - 8, 7, 74, 85, 120, 220)
-
-    # User silhouette body
-    for y in range(max(0, int(lens_cy + 2)), min(height, int(lens_cy + 16))):
-        for x in range(max(0, int(lens_cx - 12)), min(width, int(lens_cx + 12))):
-            dist = math.sqrt((x - lens_cx)**2 + (y - (lens_cy + 5))**2)
-            if dist <= 12 and y >= lens_cy + 2:
-                set_pixel(x, y, 74, 85, 120, 200)
-
-    # Handle
-    for t in range(60):
-        frac = t / 60
-        hx = lens_cx + lens_r * 0.6 + 22 * frac
-        hy = lens_cy + lens_r * 0.6 + 22 * frac
-        for dx in range(-3, 4):
-            for dy in range(-3, 4):
-                if dx*dx + dy*dy <= 9:
-                    set_pixel(hx + dx, hy + dy, 45, 55, 120)
+    # Checkmark inside bubble
+    draw_line(b_cx - 10, b_cy + 1, b_cx - 2, b_cy + 9, *TRUST_GREEN, 3.5)
+    draw_line(b_cx - 2, b_cy + 9, b_cx + 12, b_cy - 7, *TRUST_GREEN, 3.5)
 
     # --- Text area (right side) ---
-    # "User Insight" - draw as blocky pixel text
-    # Since we can't render fonts, use colored rectangles to suggest text
     text_x = 180
     text_y = 75
 
-    # Title block - bright white bar to suggest "User Insight for Reddit"
+    # Title block - "TrueVoice for Reddit"
     fill_rect(text_x, text_y, text_x + 220, text_y + 18, 255, 255, 255, 240)
-    fill_rect(text_x, text_y + 24, text_x + 150, text_y + 36, 255, 255, 255, 140)
+    fill_rect(text_x, text_y + 24, text_x + 130, text_y + 36, 255, 255, 255, 140)
 
-    # Subtitle suggestion bar
+    # Subtitle bar
     fill_rect(text_x, text_y + 50, text_x + 200, text_y + 58, 255, 255, 255, 80)
 
     # --- Trust dots (centered below icon) ---
-    dots_y = 200
+    dots_y = 195
     dot_r = 8
     dot_gap = 28
 
@@ -237,6 +249,3 @@ path = os.path.join(promo_dir, 'promo_tile_440x280.png')
 with open(path, 'wb') as f:
     f.write(png_data)
 print(f'Generated {path} ({len(png_data)} bytes)')
-
-# Also generate a larger marquee tile (1400x560) by scaling 2x concept
-# For now just the small tile is needed for initial submission

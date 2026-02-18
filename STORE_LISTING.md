@@ -1,16 +1,16 @@
 # Chrome Web Store Listing
 
 ## Name
-User Insight for Reddit
+TrueVoice for Reddit
 
 ## Short Description (132 char max)
-See account age, karma, and activity patterns next to every Reddit username. Spot new accounts and bots at a glance.
+Know who's really behind every Reddit comment. Spot bots, shills, and real people at a glance.
 
 ## Detailed Description
 
-Quickly see how established a Reddit account is — without leaving the page.
+Is that comment from a real person, a bot, or a corporate shill? Now you'll know.
 
-User Insight for Reddit adds a small badge next to every username showing their account age and karma. Hover for a detailed breakdown including subreddit diversity, comment patterns, and activity frequency.
+TrueVoice for Reddit adds a trust badge next to every username so you can instantly tell who's worth listening to. Hover for a deep breakdown of account authenticity — age, karma, behavior patterns, and more.
 
 WHAT YOU GET:
 

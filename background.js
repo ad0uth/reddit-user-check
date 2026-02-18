@@ -1,4 +1,4 @@
-// User Insight for Reddit - Background Service Worker
+// TrueVoice for Reddit - Background Service Worker
 // Handles Reddit API calls and caching
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -300,10 +300,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 
   if (msg.type === 'getSettings') {
-    chrome.storage.local.get('rui_settings', (result) => {
+    chrome.storage.local.get('tv_settings', (result) => {
       sendResponse({
         ok: true,
-        data: result.rui_settings || {
+        data: result.tv_settings || {
           enabled: true,
           showBadge: true,
           showTooltip: true,
@@ -315,7 +315,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 
   if (msg.type === 'saveSettings') {
-    chrome.storage.local.set({ rui_settings: msg.settings }, () => {
+    chrome.storage.local.set({ tv_settings: msg.settings }, () => {
       sendResponse({ ok: true });
     });
     return true;

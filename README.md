@@ -1,6 +1,6 @@
-# User Insight for Reddit
+# TrueVoice for Reddit
 
-A Chrome extension that shows account age, karma, and activity patterns next to Reddit usernames — so you can see at a glance how established an account is.
+A Chrome extension that helps you know who's really behind every Reddit comment. Spot bots, corporate shills, and real people at a glance.
 
 ## What It Shows
 

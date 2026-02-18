@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "User Insight for Reddit",
+  "name": "TrueVoice for Reddit",
   "version": "1.0.0",
-  "description": "See account age, karma, and activity patterns next to every Reddit username at a glance.",
+  "description": "Know who's really behind every Reddit comment. Spot bots, shills, and real people at a glance.",
   "permissions": [
     "storage"
   ],

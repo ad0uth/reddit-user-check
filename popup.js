@@ -1,4 +1,4 @@
-// User Insight for Reddit - Popup Script
+// TrueVoice for Reddit - Popup Script
 
 const defaults = {
   enabled: true,
