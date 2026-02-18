@@ -1,16 +1,16 @@
 # Chrome Web Store Listing
 
 ## Name
-User Insight for Reddit
+TrueVoice for Reddit
 
 ## Short Description (132 char max)
-See account age, karma, and activity patterns next to every Reddit username. Spot new accounts and bots at a glance.
+Know who's really behind every Reddit comment. Spot bots, shills, and real people at a glance.
 
 ## Detailed Description
 
-Quickly see how established a Reddit account is — without leaving the page.
+Is that comment from a real person, a bot, or a corporate shill? Now you'll know.
 
-User Insight for Reddit adds a small badge next to every username showing their account age and karma. Hover for a detailed breakdown including subreddit diversity, comment patterns, and activity frequency.
+TrueVoice for Reddit adds a trust badge next to every username so you can instantly tell who's worth listening to. Hover for a deep breakdown of account authenticity — age, karma, behavior patterns, and more.
 
 WHAT YOU GET:
 
@@ -51,3 +51,24 @@ Productivity
 
 ## Language
 English
+
+## Privacy Practices (Chrome Web Store Declaration)
+
+This developer declares that your data is:
+
+- **Not being sold to third parties**, outside of the approved use cases
+- **Not being used or transferred for purposes that are unrelated** to the item's core functionality
+- **Not being used or transferred to determine creditworthiness** or for lending purposes
+
+### Data Usage Details
+
+| Data type | Collected | Purpose |
+|-----------|-----------|---------|
+| Browsing history | No | — |
+| Personal communications | No | — |
+| User activity | No | — |
+| Website content | No | — |
+| Reddit username (viewed on page) | Temporary, not stored externally | Fetching public Reddit API data for that user |
+| Reddit public profile data | Cached locally in browser only | Displaying trust indicators |
+
+All data is cached in Chrome's local storage (`chrome.storage.local`) on your device only. No data is transmitted to any server other than Reddit's own public API (`www.reddit.com/user/{username}/about.json`). Cache expires after 24 hours.

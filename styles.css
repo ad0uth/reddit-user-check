@@ -1,8 +1,8 @@
-/* User Insight for Reddit - Styles
+/* TrueVoice for Reddit - Styles
    Designed to blend with Reddit's UI while being informative */
 
 /* === Inline Badge === */
-.rui-badge {
+.tv-badge {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -20,22 +20,22 @@
   white-space: nowrap;
 }
 
-.rui-badge:hover {
+.tv-badge:hover {
   background: rgba(128, 128, 128, 0.18);
 }
 
 /* Loading state — just a small dot, minimal space */
-.rui-badge--loading {
+.tv-badge--loading {
   padding: 1px 4px;
   background: transparent;
 }
 
-.rui-badge--loading .rui-badge-text:empty {
+.tv-badge--loading .tv-badge-text:empty {
   display: none;
 }
 
 /* Trust dot */
-.rui-dot {
+.tv-dot {
   display: inline-block;
   width: 7px;
   height: 7px;
@@ -43,40 +43,40 @@
   flex-shrink: 0;
 }
 
-.rui-dot--pending {
+.tv-dot--pending {
   background: #999;
   opacity: 0.5;
-  animation: rui-pulse 1.2s ease-in-out infinite;
+  animation: tv-pulse 1.2s ease-in-out infinite;
 }
 
-@keyframes rui-pulse {
+@keyframes tv-pulse {
   0%, 100% { opacity: 0.3; }
   50% { opacity: 0.7; }
 }
 
-.rui-dot--green {
+.tv-dot--green {
   background: #46d160;
   box-shadow: 0 0 3px rgba(70, 209, 96, 0.4);
 }
 
-.rui-dot--yellow {
+.tv-dot--yellow {
   background: #f0b429;
   box-shadow: 0 0 3px rgba(240, 180, 41, 0.4);
 }
 
-.rui-dot--red {
+.tv-dot--red {
   background: #e5534b;
   box-shadow: 0 0 3px rgba(229, 83, 75, 0.4);
 }
 
-.rui-badge-text {
+.tv-badge-text {
   color: #787c7e;
   font-weight: 400;
   letter-spacing: 0.01em;
 }
 
 /* === Tooltip === */
-.rui-tooltip {
+.tv-tooltip {
   position: absolute;
   z-index: 100000;
   width: 320px;
@@ -90,85 +90,129 @@
   font-size: 13px;
   color: #1a1a1b;
   padding: 14px;
-  animation: rui-fadeIn 0.15s ease-out;
+  animation: tv-fadeIn 0.15s ease-out;
 }
 
 /* Dark mode support (Reddit's dark theme) */
 @media (prefers-color-scheme: dark) {
-  .rui-tooltip {
+  .tv-tooltip {
     background: #1a1a1b;
     border-color: #343536;
     color: #d7dadc;
   }
 
-  .rui-badge {
+  .tv-badge {
     background: rgba(200, 200, 200, 0.08);
   }
 
-  .rui-badge:hover {
+  .tv-badge:hover {
     background: rgba(200, 200, 200, 0.14);
   }
 
-  .rui-badge-text {
+  .tv-badge-text {
     color: #818384;
   }
 
-  .rui-tooltip-divider {
+  .tv-tooltip-divider {
     border-color: #343536;
   }
 
-  .rui-metric-label {
+  .tv-metric-label {
     color: #818384;
   }
 
-  .rui-bar {
+  .tv-bar {
     background: #343536;
   }
 
-  .rui-sub-tag {
+  .tv-sub-tag {
     background: #272729;
     color: #d7dadc;
     border-color: #343536;
   }
 
-  .rui-flag {
+  .tv-flag {
     background: rgba(229, 83, 75, 0.15);
     color: #ff6b6b;
     border-color: rgba(229, 83, 75, 0.2);
   }
 
-  .rui-tooltip-footer {
+  .tv-tooltip-footer {
     border-color: #343536;
     color: #818384;
   }
 }
 
 /* Also detect Reddit's own dark theme class */
-.rui-tooltip,
-body[style*="--background"] .rui-tooltip,
-html[data-darkreader-scheme="dark"] .rui-tooltip {
+.tv-tooltip,
+body[style*="--background"] .tv-tooltip,
+html[data-darkreader-scheme="dark"] .tv-tooltip {
   /* These will cascade if Reddit applies dark mode via class/attribute */
 }
 
-@keyframes rui-fadeIn {
+@keyframes tv-fadeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.rui-tooltip-header {
+.tv-tooltip-header {
   display: flex;
   align-items: center;
+  gap: 8px;
   justify-content: space-between;
   margin-bottom: 8px;
 }
 
-.rui-tooltip-username {
+/* Avatar */
+.tv-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Username + mod/gold row */
+.tv-tooltip-user {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tv-tooltip-username {
   font-weight: 600;
   font-size: 14px;
   color: inherit;
 }
 
-.rui-tooltip-trust {
+.tv-user-badges {
+  display: flex;
+  gap: 4px;
+}
+
+.tv-user-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.tv-user-badge--mod {
+  background: rgba(70, 209, 96, 0.15);
+  color: #1a7f37;
+}
+
+.tv-user-badge--gold {
+  background: rgba(240, 180, 41, 0.2);
+  color: #9a6700;
+}
+
+.tv-tooltip-trust {
   font-size: 11px;
   font-weight: 600;
   padding: 2px 8px;
@@ -177,59 +221,59 @@ html[data-darkreader-scheme="dark"] .rui-tooltip {
   letter-spacing: 0.03em;
 }
 
-.rui-trust--green {
+.tv-trust--green {
   background: rgba(70, 209, 96, 0.12);
   color: #1a7f37;
 }
 
-.rui-trust--yellow {
+.tv-trust--yellow {
   background: rgba(240, 180, 41, 0.12);
   color: #9a6700;
 }
 
-.rui-trust--red {
+.tv-trust--red {
   background: rgba(229, 83, 75, 0.12);
   color: #cf222e;
 }
 
 @media (prefers-color-scheme: dark) {
-  .rui-trust--green {
+  .tv-trust--green {
     color: #56d364;
   }
-  .rui-trust--yellow {
+  .tv-trust--yellow {
     color: #e3b341;
   }
-  .rui-trust--red {
+  .tv-trust--red {
     color: #ff6b6b;
   }
 }
 
-.rui-tooltip-divider {
+.tv-tooltip-divider {
   border: none;
   border-top: 1px solid #eee;
   margin: 8px 0;
 }
 
-.rui-tooltip-metrics {
+.tv-tooltip-metrics {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.rui-metric {
+.tv-metric {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.rui-metric--warning {
+.tv-metric--warning {
   padding: 6px 8px;
   background: rgba(240, 180, 41, 0.08);
   border-radius: 6px;
   border-left: 3px solid #f0b429;
 }
 
-.rui-metric-label {
+.tv-metric-label {
   font-size: 11px;
   color: #787c7e;
   font-weight: 500;
@@ -237,13 +281,13 @@ html[data-darkreader-scheme="dark"] .rui-tooltip {
   letter-spacing: 0.04em;
 }
 
-.rui-metric-value {
+.tv-metric-value {
   font-size: 13px;
   font-weight: 500;
 }
 
 /* Progress bars */
-.rui-bar {
+.tv-bar {
   height: 4px;
   border-radius: 2px;
   background: #eee;
@@ -251,33 +295,33 @@ html[data-darkreader-scheme="dark"] .rui-tooltip {
   margin-top: 3px;
 }
 
-.rui-bar-fill {
+.tv-bar-fill {
   height: 100%;
   border-radius: 2px;
   transition: width 0.4s ease;
 }
 
-.rui-bar--green {
+.tv-bar--green {
   background: #46d160;
 }
 
-.rui-bar--yellow {
+.tv-bar--yellow {
   background: #f0b429;
 }
 
-.rui-bar--red {
+.tv-bar--red {
   background: #e5534b;
 }
 
 /* Subreddit tags */
-.rui-sub-tags {
+.tv-sub-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   margin-top: 3px;
 }
 
-.rui-sub-tag {
+.tv-sub-tag {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -290,20 +334,20 @@ html[data-darkreader-scheme="dark"] .rui-tooltip {
   white-space: nowrap;
 }
 
-.rui-sub-count {
+.tv-sub-count {
   font-size: 10px;
   color: #999;
   font-weight: 600;
 }
 
 /* Flags */
-.rui-flags {
+.tv-flags {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
 
-.rui-flag {
+.tv-flag {
   display: inline-block;
   padding: 2px 8px;
   background: rgba(229, 83, 75, 0.08);
@@ -315,7 +359,7 @@ html[data-darkreader-scheme="dark"] .rui-tooltip {
 }
 
 /* Footer */
-.rui-tooltip-footer {
+.tv-tooltip-footer {
   margin-top: 10px;
   padding-top: 8px;
   border-top: 1px solid #eee;
@@ -324,22 +368,78 @@ html[data-darkreader-scheme="dark"] .rui-tooltip {
   align-items: center;
 }
 
-.rui-tooltip-score {
+.tv-tooltip-score {
   font-size: 11px;
   color: #787c7e;
   font-weight: 500;
 }
 
+/* Sample recent comments */
+.tv-sample-comments {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.tv-sample-comment {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 7px;
+  background: #f6f7f8;
+  border-radius: 5px;
+}
+
+.tv-sample-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: #0079d3;
+}
+
+.tv-sample-text {
+  font-size: 11px;
+  color: #3c3c3c;
+  line-height: 1.4;
+}
+
+/* Dark mode additions */
+@media (prefers-color-scheme: dark) {
+  .tv-avatar {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .tv-user-badge--mod {
+    color: #56d364;
+  }
+
+  .tv-user-badge--gold {
+    color: #e3b341;
+  }
+
+  .tv-sample-comment {
+    background: #272729;
+  }
+
+  .tv-sample-sub {
+    color: #5f9eff;
+  }
+
+  .tv-sample-text {
+    color: #b0b3b5;
+  }
+}
+
 /* Tooltip scrollbar */
-.rui-tooltip::-webkit-scrollbar {
+.tv-tooltip::-webkit-scrollbar {
   width: 4px;
 }
 
-.rui-tooltip::-webkit-scrollbar-track {
+.tv-tooltip::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.rui-tooltip::-webkit-scrollbar-thumb {
+.tv-tooltip::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.15);
   border-radius: 2px;
 }

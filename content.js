@@ -1,4 +1,4 @@
-// User Insight for Reddit - Content Script
+// TrueVoice for Reddit - Content Script
 // Detects usernames on the page and injects trust badges + hover tooltips
 
 (function () {
@@ -40,12 +40,12 @@
 
   // Listen for setting changes
   chrome.storage.onChanged.addListener((changes) => {
-    if (changes.rui_settings) {
-      settings = changes.rui_settings.newValue || settings;
+    if (changes.tv_settings) {
+      settings = changes.tv_settings.newValue || settings;
       if (!settings.enabled) {
         // Remove all badges
-        document.querySelectorAll('.rui-badge').forEach(el => el.remove());
-        document.querySelectorAll('.rui-tooltip').forEach(el => el.remove());
+        document.querySelectorAll('.tv-badge').forEach(el => el.remove());
+        document.querySelectorAll('.tv-tooltip').forEach(el => el.remove());
       }
     }
   });
@@ -97,7 +97,7 @@
       if (!href.match(/\/u(?:ser)?\/[A-Za-z0-9_-]+\/?$/)) continue;
 
       // Skip links inside our own badges/tooltips
-      if (link.closest('.rui-badge, .rui-tooltip')) continue;
+      if (link.closest('.tv-badge, .tv-tooltip')) continue;
 
       // Must contain visible username text (not just an avatar/icon)
       const text = link.textContent.trim();
@@ -133,35 +133,45 @@
 
   function createBadge(username) {
     const badge = document.createElement('span');
-    badge.className = 'rui-badge rui-badge--loading';
+    badge.className = 'tv-badge tv-badge--loading';
     badge.dataset.username = username;
 
     // Start with just a loading dot — no text until data arrives
-    badge.innerHTML = `<span class="rui-dot rui-dot--pending"></span><span class="rui-badge-text"></span>`;
+    badge.innerHTML = `<span class="tv-dot tv-dot--pending"></span><span class="tv-badge-text"></span>`;
 
     return badge;
   }
 
   function updateBadge(badge, about, level) {
-    badge.classList.remove('rui-badge--loading');
+    badge.classList.remove('tv-badge--loading');
 
-    const dot = badge.querySelector('.rui-dot');
+    const dot = badge.querySelector('.tv-dot');
     if (dot) {
-      dot.classList.remove('rui-dot--pending');
-      dot.classList.add(`rui-dot--${level}`);
+      dot.classList.remove('tv-dot--pending');
+      dot.classList.add(`tv-dot--${level}`);
     }
 
-    const text = badge.querySelector('.rui-badge-text');
+    const text = badge.querySelector('.tv-badge-text');
     if (text) {
       text.textContent = `${formatAge(about.created)} · ${formatKarma(about.totalKarma)}`;
     }
+  }
+
+  // --- Helpers ---
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
   // --- Tooltip ---
 
   function createTooltip(username, about, comments, trust) {
     const tooltip = document.createElement('div');
-    tooltip.className = 'rui-tooltip';
+    tooltip.className = 'tv-tooltip';
 
     const ageMonths = Math.floor((Date.now() / 1000 - about.created) / (30 * 86400));
     const ageText = ageMonths >= 12
@@ -176,21 +186,35 @@
     };
     const levelLabel = levelLabels[trust.level] || 'Unknown';
 
+    // Avatar — clean up Reddit's noisy icon URL query params
+    const avatarUrl = about.iconUrl
+      ? about.iconUrl.replace(/\?.*$/, '') // strip query string (size/format params)
+      : null;
+
+    const userBadgesHtml = [
+      about.isMod  ? '<span class="tv-user-badge tv-user-badge--mod">MOD</span>'  : '',
+      about.isGold ? '<span class="tv-user-badge tv-user-badge--gold">GOLD</span>' : ''
+    ].join('');
+
     // Build metrics rows
     let metricsHtml = `
-      <div class="rui-tooltip-header">
-        <span class="rui-tooltip-username">u/${about.name}</span>
-        <span class="rui-tooltip-trust rui-trust--${trust.level}">${levelLabel}</span>
-      </div>
-      <div class="rui-tooltip-divider"></div>
-      <div class="rui-tooltip-metrics">
-        <div class="rui-metric">
-          <span class="rui-metric-label">Account Age</span>
-          <span class="rui-metric-value">${ageText}</span>
+      <div class="tv-tooltip-header">
+        ${avatarUrl ? `<img class="tv-avatar" src="${avatarUrl}" alt="">` : ''}
+        <div class="tv-tooltip-user">
+          <span class="tv-tooltip-username">u/${escapeHtml(about.name)}</span>
+          ${userBadgesHtml ? `<div class="tv-user-badges">${userBadgesHtml}</div>` : ''}
         </div>
-        <div class="rui-metric">
-          <span class="rui-metric-label">Karma</span>
-          <span class="rui-metric-value">${formatKarma(about.commentKarma)} comment · ${formatKarma(about.linkKarma)} post</span>
+        <span class="tv-tooltip-trust tv-trust--${trust.level}">${levelLabel}</span>
+      </div>
+      <div class="tv-tooltip-divider"></div>
+      <div class="tv-tooltip-metrics">
+        <div class="tv-metric">
+          <span class="tv-metric-label">Account Age</span>
+          <span class="tv-metric-value">${ageText}</span>
+        </div>
+        <div class="tv-metric">
+          <span class="tv-metric-label">Karma</span>
+          <span class="tv-metric-value">${formatKarma(about.commentKarma)} comment · ${formatKarma(about.linkKarma)} post</span>
         </div>
     `;
 
@@ -200,32 +224,32 @@
       const diversityColor = comments.uniqueSubreddits >= 6 ? 'green' : comments.uniqueSubreddits >= 3 ? 'yellow' : 'red';
 
       metricsHtml += `
-        <div class="rui-metric">
-          <span class="rui-metric-label">Subreddit Diversity</span>
-          <span class="rui-metric-value">${comments.uniqueSubreddits} unique subs in last ${comments.count} comments</span>
-          <div class="rui-bar"><div class="rui-bar-fill rui-bar--${diversityColor}" style="width:${diversityPct}%"></div></div>
+        <div class="tv-metric">
+          <span class="tv-metric-label">Subreddit Diversity</span>
+          <span class="tv-metric-value">${comments.uniqueSubreddits} unique subs in last ${comments.count} comments</span>
+          <div class="tv-bar"><div class="tv-bar-fill tv-bar--${diversityColor}" style="width:${diversityPct}%"></div></div>
         </div>
       `;
 
       // Repetition bar
       const repColor = comments.repetitionScore < 20 ? 'green' : comments.repetitionScore < 40 ? 'yellow' : 'red';
       metricsHtml += `
-        <div class="rui-metric">
-          <span class="rui-metric-label">Comment Variety</span>
-          <span class="rui-metric-value">${100 - comments.repetitionScore}% unique</span>
-          <div class="rui-bar"><div class="rui-bar-fill rui-bar--${repColor}" style="width:${100 - comments.repetitionScore}%"></div></div>
+        <div class="tv-metric">
+          <span class="tv-metric-label">Comment Variety</span>
+          <span class="tv-metric-value">${100 - comments.repetitionScore}% unique</span>
+          <div class="tv-bar"><div class="tv-bar-fill tv-bar--${repColor}" style="width:${100 - comments.repetitionScore}%"></div></div>
         </div>
       `;
 
       // Top subreddits
       if (comments.topSubreddits && comments.topSubreddits.length > 0) {
         const subsHtml = comments.topSubreddits
-          .map(s => `<span class="rui-sub-tag">r/${s.name} <span class="rui-sub-count">${s.count}</span></span>`)
+          .map(s => `<span class="tv-sub-tag">r/${s.name} <span class="tv-sub-count">${s.count}</span></span>`)
           .join('');
         metricsHtml += `
-          <div class="rui-metric">
-            <span class="rui-metric-label">Top Subreddits</span>
-            <div class="rui-sub-tags">${subsHtml}</div>
+          <div class="tv-metric">
+            <span class="tv-metric-label">Top Subreddits</span>
+            <div class="tv-sub-tags">${subsHtml}</div>
           </div>
         `;
       }
@@ -233,9 +257,9 @@
       // Burst warning
       if (comments.burstScore >= 10) {
         metricsHtml += `
-          <div class="rui-metric rui-metric--warning">
-            <span class="rui-metric-label">Activity Burst</span>
-            <span class="rui-metric-value">${comments.burstScore} comments in 24h window</span>
+          <div class="tv-metric tv-metric--warning">
+            <span class="tv-metric-label">Activity Burst</span>
+            <span class="tv-metric-value">${comments.burstScore} comments in 24h window</span>
           </div>
         `;
       }
@@ -243,17 +267,34 @@
 
     // Flags
     if (trust.flags && trust.flags.length > 0) {
-      const flagsHtml = trust.flags.map(f => `<span class="rui-flag">${f}</span>`).join('');
+      const flagsHtml = trust.flags.map(f => `<span class="tv-flag">${f}</span>`).join('');
       metricsHtml += `
-        <div class="rui-tooltip-divider"></div>
-        <div class="rui-flags">${flagsHtml}</div>
+        <div class="tv-tooltip-divider"></div>
+        <div class="tv-flags">${flagsHtml}</div>
+      `;
+    }
+
+    // Sample recent comments
+    if (comments && comments.sampleComments && comments.sampleComments.length > 0) {
+      const samplesHtml = comments.sampleComments.map(c => `
+        <div class="tv-sample-comment">
+          <span class="tv-sample-sub">r/${escapeHtml(c.subreddit)}</span>
+          <span class="tv-sample-text">${escapeHtml(c.text)}</span>
+        </div>
+      `).join('');
+      metricsHtml += `
+        <div class="tv-tooltip-divider"></div>
+        <div class="tv-metric">
+          <span class="tv-metric-label">Recent Comments</span>
+          <div class="tv-sample-comments">${samplesHtml}</div>
+        </div>
       `;
     }
 
     metricsHtml += `
       </div>
-      <div class="rui-tooltip-footer">
-        <span class="rui-tooltip-score">Trust Score: ${trust.score}/${trust.maxScore}</span>
+      <div class="tv-tooltip-footer">
+        <span class="tv-tooltip-score">Trust Score: ${trust.percent}%</span>
       </div>
     `;
 
@@ -367,7 +408,7 @@
 
     } catch (err) {
       // Silently fail - don't break Reddit
-      console.debug('[User Insight for Reddit] Error fetching', username, err);
+      console.debug('[TrueVoice] Error fetching', username, err);
     }
   }
 
@@ -455,7 +496,7 @@
   }, { passive: true });
 
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.rui-tooltip, .rui-badge')) {
+    if (!e.target.closest('.tv-tooltip, .tv-badge')) {
       removeTooltip();
     }
   });

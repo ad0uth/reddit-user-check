@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate PNG icons for User Insight for Reddit extension.
+"""Generate PNG icons for TrueVoice for Reddit extension.
 Uses only stdlib (struct, zlib) - no external dependencies."""
 
 import struct
@@ -35,16 +35,16 @@ def lerp_color(c1, c2, t):
 
 
 # Brand colors
-BRAND_PRIMARY = (74, 144, 217)    # #4A90D9 - trustworthy blue
-BRAND_SECONDARY = (108, 92, 231)  # #6C5CE7 - insight purple
-BRAND_DARK = (45, 55, 120)        # dark accent for handle/borders
+BRAND_PRIMARY = (59, 130, 246)    # #3B82F6 - vibrant blue
+BRAND_SECONDARY = (139, 92, 246)  # #8B5CF6 - vivid purple
+BRAND_DARK = (30, 41, 82)         # dark accent
 TRUST_GREEN = (70, 209, 96)
 TRUST_YELLOW = (240, 180, 41)
 TRUST_RED = (229, 83, 75)
 
 
 def draw_icon(size):
-    """Draw the extension icon — shield with magnifying glass motif."""
+    """Draw the TrueVoice icon — speech bubble with checkmark."""
     pixels = [0] * (size * size * 4)
     cx, cy = size / 2, size / 2
 
@@ -75,20 +75,6 @@ def draw_icon(size):
                     else:
                         set_pixel(x, y, red, green, blue, alpha)
 
-    def draw_circle_ring(cx, cy, r, thickness, red, green, blue, alpha=255):
-        for y in range(size):
-            for x in range(size):
-                dist = math.sqrt((x - cx)**2 + (y - cy)**2)
-                inner = r - thickness/2
-                outer = r + thickness/2
-                if inner <= dist <= outer:
-                    edge_dist = min(dist - inner, outer - dist)
-                    if edge_dist < 1:
-                        aa = max(0, min(255, int(edge_dist * 255)))
-                        set_pixel(x, y, red, green, blue, int(alpha * aa / 255))
-                    else:
-                        set_pixel(x, y, red, green, blue, alpha)
-
     # Background — gradient circle (blue to purple, top-left to bottom-right)
     bg_r = size * 0.46
     for y in range(size):
@@ -103,59 +89,104 @@ def draw_icon(size):
                 else:
                     set_pixel(x, y, c[0], c[1], c[2], 255)
 
-    # Inner white circle (lens area)
-    lens_cx = cx - size * 0.06
-    lens_cy = cy - size * 0.06
-    lens_r = size * 0.26
-    draw_circle_filled(lens_cx, lens_cy, lens_r, 255, 255, 255, 255)
+    # --- Speech bubble (white, rounded rectangle with tail) ---
+    bubble_cx = cx
+    bubble_cy = cy - size * 0.06
+    bubble_w = size * 0.52   # half-width
+    bubble_h = size * 0.34   # half-height
+    bubble_r = size * 0.12   # corner radius
 
-    # Lens border
-    thickness = max(1.5, size * 0.04)
-    draw_circle_ring(lens_cx, lens_cy, lens_r, thickness, BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2], 255)
-
-    # Handle of magnifying glass
-    handle_start_x = lens_cx + lens_r * 0.65
-    handle_start_y = lens_cy + lens_r * 0.65
-    handle_len = size * 0.22
-    handle_thickness = max(2, size * 0.07)
-
-    for t in range(int(handle_len * 3)):
-        frac = t / (handle_len * 3)
-        hx = handle_start_x + handle_len * frac
-        hy = handle_start_y + handle_len * frac
-        for dx in range(-int(handle_thickness), int(handle_thickness) + 1):
-            for dy in range(-int(handle_thickness), int(handle_thickness) + 1):
-                if dx*dx + dy*dy <= handle_thickness * handle_thickness:
-                    set_pixel(int(hx + dx * 0.5), int(hy + dy * 0.5),
-                              BRAND_DARK[0], BRAND_DARK[1], BRAND_DARK[2])
-
-    # User silhouette (head) inside lens
-    head_r = lens_r * 0.22
-    head_cx = lens_cx
-    head_cy = lens_cy - lens_r * 0.18
-    draw_circle_filled(head_cx, head_cy, head_r, 74, 85, 120, 220)
-
-    # User silhouette (body arc)
-    body_cy = lens_cy + lens_r * 0.22
-    body_r = lens_r * 0.35
+    # Draw rounded rectangle for speech bubble
     for y in range(size):
         for x in range(size):
-            dist = math.sqrt((x - head_cx)**2 + (y - body_cy)**2)
-            if dist <= body_r and y >= body_cy and y <= body_cy + body_r * 0.7:
-                edge = min(dist, body_r - dist) if dist < body_r else 0
-                if edge < 1:
-                    set_pixel(x, y, 74, 85, 120, int(220 * edge))
+            px = x - bubble_cx
+            py = y - bubble_cy
+
+            # Check if inside the rounded rectangle
+            inside = False
+            edge_dist = 999
+
+            # Inner rectangle areas (no rounding needed)
+            if abs(px) <= bubble_w - bubble_r and abs(py) <= bubble_h:
+                inside = True
+                edge_dist = min(bubble_h - abs(py), bubble_w - bubble_r - abs(px))
+            elif abs(px) <= bubble_w and abs(py) <= bubble_h - bubble_r:
+                inside = True
+                edge_dist = min(bubble_w - abs(px), bubble_h - bubble_r - abs(py))
+            else:
+                # Check corner circles
+                corners = [
+                    (bubble_cx - bubble_w + bubble_r, bubble_cy - bubble_h + bubble_r),
+                    (bubble_cx + bubble_w - bubble_r, bubble_cy - bubble_h + bubble_r),
+                    (bubble_cx - bubble_w + bubble_r, bubble_cy + bubble_h - bubble_r),
+                    (bubble_cx + bubble_w - bubble_r, bubble_cy + bubble_h - bubble_r),
+                ]
+                for ccx, ccy in corners:
+                    d = math.sqrt((x - ccx)**2 + (y - ccy)**2)
+                    if d <= bubble_r:
+                        inside = True
+                        edge_dist = bubble_r - d
+                        break
+
+            if inside:
+                if edge_dist < 1:
+                    aa = max(0, min(255, int(edge_dist * 255)))
+                    set_pixel(x, y, 255, 255, 255, aa)
                 else:
-                    set_pixel(x, y, 74, 85, 120, 220)
+                    set_pixel(x, y, 255, 255, 255, 255)
 
-    # Three trust dots at bottom
-    dot_r = size * 0.055
-    dot_y = cy + size * 0.32
-    dot_gap = size * 0.12
+    # Speech bubble tail (small triangle pointing down-left)
+    tail_x = bubble_cx - size * 0.12
+    tail_y = bubble_cy + bubble_h
+    tail_w = size * 0.10
+    tail_h = size * 0.10
 
-    draw_circle_filled(cx - dot_gap, dot_y, dot_r, *TRUST_GREEN, 255)
-    draw_circle_filled(cx, dot_y, dot_r, *TRUST_YELLOW, 255)
-    draw_circle_filled(cx + dot_gap, dot_y, dot_r, *TRUST_RED, 255)
+    for y in range(max(0, int(tail_y)), min(size, int(tail_y + tail_h + 1))):
+        for x in range(max(0, int(tail_x - tail_w)), min(size, int(tail_x + tail_w))):
+            # Triangle: narrows as y increases, shifts left
+            progress = (y - tail_y) / tail_h if tail_h > 0 else 0
+            if progress < 0 or progress > 1:
+                continue
+            left_edge = tail_x - tail_w * 0.3 - tail_w * 0.5 * progress
+            right_edge = tail_x + tail_w * 0.3 - tail_w * 0.2 * progress
+            if left_edge <= x <= right_edge:
+                set_pixel(x, y, 255, 255, 255, 255)
+
+    # --- Checkmark inside the bubble ---
+    # Draw a bold checkmark
+    check_cx = bubble_cx
+    check_cy = bubble_cy
+    check_scale = size * 0.015
+
+    # Checkmark: short stroke going down-right, then long stroke going up-right
+    # Short leg: from (-3, 0) to (0, 3)
+    # Long leg: from (0, 3) to (5, -3)
+    thickness = max(1.5, size * 0.05)
+
+    def draw_line(x1, y1, x2, y2, r, g, b, thick):
+        length = math.sqrt((x2-x1)**2 + (y2-y1)**2)
+        if length == 0:
+            return
+        steps = int(length * 3) + 1
+        for i in range(steps + 1):
+            t = i / steps
+            lx = x1 + (x2 - x1) * t
+            ly = y1 + (y2 - y1) * t
+            for dy in range(-int(thick)-1, int(thick)+2):
+                for dx in range(-int(thick)-1, int(thick)+2):
+                    if dx*dx + dy*dy <= thick * thick:
+                        set_pixel(int(lx + dx), int(ly + dy), r, g, b)
+
+    # Checkmark points (relative to bubble center)
+    p1_x = check_cx - size * 0.12
+    p1_y = check_cy + size * 0.01
+    p2_x = check_cx - size * 0.02
+    p2_y = check_cy + size * 0.12
+    p3_x = check_cx + size * 0.16
+    p3_y = check_cy - size * 0.12
+
+    draw_line(p1_x, p1_y, p2_x, p2_y, TRUST_GREEN[0], TRUST_GREEN[1], TRUST_GREEN[2], thickness)
+    draw_line(p2_x, p2_y, p3_x, p3_y, TRUST_GREEN[0], TRUST_GREEN[1], TRUST_GREEN[2], thickness)
 
     return pixels
 

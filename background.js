@@ -1,4 +1,4 @@
-// User Insight for Reddit - Background Service Worker
+// TrueVoice for Reddit - Background Service Worker
 // Handles Reddit API calls and caching
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -248,6 +248,20 @@ function computeTrustScore(about, comments) {
   else if (about.totalKarma >= 100) { score += 1; }
   else { flags.push('Very low karma'); }
 
+  // Verified email (+1 point — unverified is a mild red flag)
+  if (about.hasVerifiedEmail) { score += 1; }
+
+  // Link-to-comment karma ratio: high link karma vs near-zero comment karma
+  // is a classic pattern for accounts that submit promotional links but don't discuss
+  if (about.linkKarma > about.commentKarma * 5 && about.linkKarma > 1000) {
+    flags.push('High link-to-comment ratio');
+  }
+
+  // Username pattern: 4+ trailing digits is a common bot/sock-puppet pattern
+  if (/\d{4,}$/.test(about.name)) {
+    flags.push('Generic username pattern');
+  }
+
   // Subreddit diversity (0-3 points)
   if (comments) {
     if (comments.uniqueSubreddits >= 8) { score += 3; }
@@ -266,14 +280,15 @@ function computeTrustScore(about, comments) {
     }
   }
 
-  // Max possible: 11 points
-  // Green: 7+, Yellow: 4-6, Red: 0-3
+  // Max possible: 12 points (+1 from verified email vs old 11)
+  // Green: 8+, Yellow: 5-7, Red: 0-4
   let level;
-  if (score >= 7) level = 'green';
-  else if (score >= 4) level = 'yellow';
+  if (score >= 8) level = 'green';
+  else if (score >= 5) level = 'yellow';
   else level = 'red';
 
-  return { score, maxScore: 11, level, flags };
+  const percent = Math.round((score / 12) * 100);
+  return { score, maxScore: 12, percent, level, flags };
 }
 
 // --- Message handling ---
@@ -300,10 +315,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 
   if (msg.type === 'getSettings') {
-    chrome.storage.local.get('rui_settings', (result) => {
+    chrome.storage.local.get('tv_settings', (result) => {
       sendResponse({
         ok: true,
-        data: result.rui_settings || {
+        data: result.tv_settings || {
           enabled: true,
           showBadge: true,
           showTooltip: true,
@@ -315,7 +330,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 
   if (msg.type === 'saveSettings') {
-    chrome.storage.local.set({ rui_settings: msg.settings }, () => {
+    chrome.storage.local.set({ tv_settings: msg.settings }, () => {
       sendResponse({ ok: true });
     });
     return true;
