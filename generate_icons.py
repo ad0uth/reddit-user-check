@@ -44,7 +44,8 @@ TRUST_RED = (229, 83, 75)
 
 
 def draw_icon(size):
-    """Draw the TrueVoice icon — speech bubble with checkmark."""
+    """Draw the TrueVoice icon — bot face with prohibited sign.
+    Size-aware: simplifies details at small sizes for clarity."""
     pixels = [0] * (size * size * 4)
     cx, cy = size / 2, size / 2
 
@@ -64,105 +65,6 @@ def draw_icon(size):
                 pixels[idx+2] = int(pixels[idx+2] * (1-fa) + b * fa)
                 pixels[idx+3] = min(255, old_a + a)
 
-    def draw_circle_filled(cx, cy, r, red, green, blue, alpha=255):
-        for y in range(size):
-            for x in range(size):
-                dist = math.sqrt((x - cx)**2 + (y - cy)**2)
-                if dist <= r:
-                    if dist > r - 1:
-                        aa = max(0, min(255, int((r - dist) * 255)))
-                        set_pixel(x, y, red, green, blue, int(alpha * aa / 255))
-                    else:
-                        set_pixel(x, y, red, green, blue, alpha)
-
-    # Background — gradient circle (blue to purple, top-left to bottom-right)
-    bg_r = size * 0.46
-    for y in range(size):
-        for x in range(size):
-            dist = math.sqrt((x - cx)**2 + (y - cy)**2)
-            if dist <= bg_r:
-                t = ((x + y) / (size * 2))  # diagonal gradient
-                c = lerp_color(BRAND_PRIMARY, BRAND_SECONDARY, t)
-                if dist > bg_r - 1:
-                    aa = max(0, min(255, int((bg_r - dist) * 255)))
-                    set_pixel(x, y, c[0], c[1], c[2], aa)
-                else:
-                    set_pixel(x, y, c[0], c[1], c[2], 255)
-
-    # --- Speech bubble (white, rounded rectangle with tail) ---
-    bubble_cx = cx
-    bubble_cy = cy - size * 0.06
-    bubble_w = size * 0.52   # half-width
-    bubble_h = size * 0.34   # half-height
-    bubble_r = size * 0.12   # corner radius
-
-    # Draw rounded rectangle for speech bubble
-    for y in range(size):
-        for x in range(size):
-            px = x - bubble_cx
-            py = y - bubble_cy
-
-            # Check if inside the rounded rectangle
-            inside = False
-            edge_dist = 999
-
-            # Inner rectangle areas (no rounding needed)
-            if abs(px) <= bubble_w - bubble_r and abs(py) <= bubble_h:
-                inside = True
-                edge_dist = min(bubble_h - abs(py), bubble_w - bubble_r - abs(px))
-            elif abs(px) <= bubble_w and abs(py) <= bubble_h - bubble_r:
-                inside = True
-                edge_dist = min(bubble_w - abs(px), bubble_h - bubble_r - abs(py))
-            else:
-                # Check corner circles
-                corners = [
-                    (bubble_cx - bubble_w + bubble_r, bubble_cy - bubble_h + bubble_r),
-                    (bubble_cx + bubble_w - bubble_r, bubble_cy - bubble_h + bubble_r),
-                    (bubble_cx - bubble_w + bubble_r, bubble_cy + bubble_h - bubble_r),
-                    (bubble_cx + bubble_w - bubble_r, bubble_cy + bubble_h - bubble_r),
-                ]
-                for ccx, ccy in corners:
-                    d = math.sqrt((x - ccx)**2 + (y - ccy)**2)
-                    if d <= bubble_r:
-                        inside = True
-                        edge_dist = bubble_r - d
-                        break
-
-            if inside:
-                if edge_dist < 1:
-                    aa = max(0, min(255, int(edge_dist * 255)))
-                    set_pixel(x, y, 255, 255, 255, aa)
-                else:
-                    set_pixel(x, y, 255, 255, 255, 255)
-
-    # Speech bubble tail (small triangle pointing down-left)
-    tail_x = bubble_cx - size * 0.12
-    tail_y = bubble_cy + bubble_h
-    tail_w = size * 0.10
-    tail_h = size * 0.10
-
-    for y in range(max(0, int(tail_y)), min(size, int(tail_y + tail_h + 1))):
-        for x in range(max(0, int(tail_x - tail_w)), min(size, int(tail_x + tail_w))):
-            # Triangle: narrows as y increases, shifts left
-            progress = (y - tail_y) / tail_h if tail_h > 0 else 0
-            if progress < 0 or progress > 1:
-                continue
-            left_edge = tail_x - tail_w * 0.3 - tail_w * 0.5 * progress
-            right_edge = tail_x + tail_w * 0.3 - tail_w * 0.2 * progress
-            if left_edge <= x <= right_edge:
-                set_pixel(x, y, 255, 255, 255, 255)
-
-    # --- Checkmark inside the bubble ---
-    # Draw a bold checkmark
-    check_cx = bubble_cx
-    check_cy = bubble_cy
-    check_scale = size * 0.015
-
-    # Checkmark: short stroke going down-right, then long stroke going up-right
-    # Short leg: from (-3, 0) to (0, 3)
-    # Long leg: from (0, 3) to (5, -3)
-    thickness = max(1.5, size * 0.05)
-
     def draw_line(x1, y1, x2, y2, r, g, b, thick):
         length = math.sqrt((x2-x1)**2 + (y2-y1)**2)
         if length == 0:
@@ -177,16 +79,116 @@ def draw_icon(size):
                     if dx*dx + dy*dy <= thick * thick:
                         set_pixel(int(lx + dx), int(ly + dy), r, g, b)
 
-    # Checkmark points (relative to bubble center)
-    p1_x = check_cx - size * 0.12
-    p1_y = check_cy + size * 0.01
-    p2_x = check_cx - size * 0.02
-    p2_y = check_cy + size * 0.12
-    p3_x = check_cx + size * 0.16
-    p3_y = check_cy - size * 0.12
+    def fill_rounded_rect(rcx, rcy, hw, hh, rad, r, g, b):
+        """Draw a filled rounded rectangle."""
+        for y in range(size):
+            for x in range(size):
+                px, py = abs(x - rcx), abs(y - rcy)
+                inside = False
+                edge_d = -999
+                if px <= hw - rad and py <= hh:
+                    inside = True
+                    edge_d = min(hh - py, hw - rad - px)
+                elif px <= hw and py <= hh - rad:
+                    inside = True
+                    edge_d = min(hw - px, hh - rad - py)
+                elif px > hw - rad and py > hh - rad:
+                    d = math.sqrt((px - (hw - rad))**2 + (py - (hh - rad))**2)
+                    edge_d = rad - d
+                    inside = edge_d >= 0
+                if inside:
+                    if edge_d < 1:
+                        aa = max(0, min(255, int(edge_d * 255)))
+                        set_pixel(x, y, r, g, b, aa)
+                    else:
+                        set_pixel(x, y, r, g, b, 255)
 
-    draw_line(p1_x, p1_y, p2_x, p2_y, TRUST_GREEN[0], TRUST_GREEN[1], TRUST_GREEN[2], thickness)
-    draw_line(p2_x, p2_y, p3_x, p3_y, TRUST_GREEN[0], TRUST_GREEN[1], TRUST_GREEN[2], thickness)
+    def fill_circle(fcx, fcy, r, red, green, blue):
+        for y in range(size):
+            for x in range(size):
+                d = math.sqrt((x - fcx)**2 + (y - fcy)**2)
+                if d <= r:
+                    a = 255 if d <= r - 1 else max(0, min(255, int((r - d) * 255)))
+                    set_pixel(x, y, red, green, blue, a)
+
+    BOT_BODY = (90, 105, 140)       # bot head — steel blue-gray
+    BOT_DARK = (55, 65, 90)         # antenna/ear/mouth
+    EYE_WHITE = (255, 255, 255)     # bright white eyes for contrast
+    PROHIBIT_RED = (210, 40, 35)    # strong red
+
+    # ============================================================
+    # Bot face — centered, fills the middle of the icon
+    # ============================================================
+    # Head is a rounded rectangle, shifted slightly down for antenna room
+    head_cy = cy + size * 0.05
+    head_hw = size * 0.28   # half-width
+    head_hh = size * 0.22   # half-height
+    head_rad = size * 0.10  # generous rounding to look friendly/robotic
+
+    fill_rounded_rect(cx, head_cy, head_hw, head_hh, head_rad, *BOT_BODY)
+
+    # --- Eyes: two bright circles that read even at 16px ---
+    eye_r = max(1.4, size * 0.065)
+    eye_y = head_cy - size * 0.03
+    eye_spacing = size * 0.135
+    for side in [-1, 1]:
+        fill_circle(cx + side * eye_spacing, eye_y, eye_r, *EYE_WHITE)
+
+    # --- Details that only appear at larger sizes ---
+    if size >= 32:
+        # Antenna stalk
+        ant_base_y = head_cy - head_hh
+        ant_top_y = ant_base_y - size * 0.12
+        ant_thick = max(1.0, size * 0.025)
+        draw_line(cx, ant_base_y, cx, ant_top_y, *BOT_DARK, ant_thick)
+        # Antenna ball
+        fill_circle(cx, ant_top_y, max(1.5, size * 0.04), *EYE_WHITE)
+
+        # Ears
+        ear_w = max(1, size * 0.04)
+        ear_hh = size * 0.09
+        for side in [-1, 1]:
+            ear_cx = cx + side * (head_hw + ear_w + 0.5)
+            fill_rounded_rect(ear_cx, head_cy, ear_w, ear_hh, ear_w * 0.5, *BOT_DARK)
+
+        # Mouth — simple horizontal bar
+        mouth_y = head_cy + size * 0.10
+        mouth_hw = size * 0.13
+        mouth_thick = max(1.0, size * 0.02)
+        draw_line(cx - mouth_hw, mouth_y, cx + mouth_hw, mouth_y, *BOT_DARK, mouth_thick)
+
+    if size >= 64:
+        # Mouth grill lines at large sizes
+        mouth_y = head_cy + size * 0.10
+        mouth_hw = size * 0.13
+        for i in range(3):
+            lx = cx - mouth_hw + (2 * mouth_hw) * (i + 1) / 4
+            draw_line(lx, mouth_y - size * 0.025, lx, mouth_y + size * 0.025,
+                      *BOT_DARK, max(0.8, size * 0.012))
+
+    # ============================================================
+    # Prohibited sign — red circle outline + diagonal slash
+    # Drawn last so it's on top of everything
+    # ============================================================
+    ban_r = size * 0.43
+    ban_thick = max(1.5, size * 0.055)
+
+    # Red circle outline
+    for y in range(size):
+        for x in range(size):
+            d = abs(math.sqrt((x - cx)**2 + (y - cy)**2) - ban_r)
+            if d <= ban_thick:
+                a = 255 if d <= ban_thick - 0.8 else max(0, min(255, int((ban_thick - d) / 0.8 * 255)))
+                set_pixel(x, y, *PROHIBIT_RED, a)
+
+    # Diagonal slash — from top-right to bottom-left
+    slash_len = ban_r * 0.88
+    angle = math.radians(45)
+    sx1 = cx + slash_len * math.cos(angle)
+    sy1 = cy - slash_len * math.sin(angle)
+    sx2 = cx - slash_len * math.cos(angle)
+    sy2 = cy + slash_len * math.sin(angle)
+    draw_line(sx1, sy1, sx2, sy2, *PROHIBIT_RED, ban_thick)
 
     return pixels
 
