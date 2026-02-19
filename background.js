@@ -284,9 +284,10 @@ function computeTrustScore(about, comments) {
   }
 
   // Max possible: 12 points (+1 from verified email vs old 11)
-  // Green: 8+, Yellow: 5-7, Red: 0-4
+  // Gold: 11+, Green: 8-10, Yellow: 5-7, Red: 0-4
   let level;
-  if (score >= 8) level = 'green';
+  if (score >= 11) level = 'gold';
+  else if (score >= 8) level = 'green';
   else if (score >= 5) level = 'yellow';
   else level = 'red';
 

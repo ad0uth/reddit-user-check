@@ -145,6 +145,7 @@
       flex-shrink: 0;
     }
 
+    .legend-star { color: #d4a017; font-size: 10px; line-height: 1; flex-shrink: 0; }
     .legend-dot--green { background: #46d160; }
     .legend-dot--yellow { background: #f0b429; }
     .legend-dot--red { background: #e5534b; }
@@ -243,16 +244,20 @@
       <h2>Indicators</h2>
       <div class="legend">
         <div class="legend-item">
+          <span class="legend-star">&#9733;</span>
+          <span>Very Trusted &mdash; top-scoring established account</span>
+        </div>
+        <div class="legend-item">
           <span class="legend-dot legend-dot--green"></span>
-          <span>Established &mdash; active account with diverse history</span>
+          <span>Looks Genuine &mdash; active account with diverse history</span>
         </div>
         <div class="legend-item">
           <span class="legend-dot legend-dot--yellow"></span>
-          <span>Limited &mdash; newer account or narrow activity</span>
+          <span>Low Confidence &mdash; newer account or narrow activity</span>
         </div>
         <div class="legend-item">
           <span class="legend-dot legend-dot--red"></span>
-          <span>New &mdash; very new, low karma, or repetitive</span>
+          <span>Suspicious &mdash; very new, low karma, or repetitive</span>
         </div>
       </div>
     </div>
