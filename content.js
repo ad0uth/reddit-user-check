@@ -148,7 +148,13 @@
     const dot = badge.querySelector('.tv-dot');
     if (dot) {
       dot.classList.remove('tv-dot--pending');
-      dot.classList.add(`tv-dot--${level}`);
+      if (level === 'gold') {
+        // Replace dot with a gold star
+        dot.className = 'tv-star';
+        dot.textContent = '\u2605';
+      } else {
+        dot.classList.add(`tv-dot--${level}`);
+      }
     }
 
     const text = badge.querySelector('.tv-badge-text');
@@ -180,8 +186,9 @@
 
     // Trust level label
     const levelLabels = {
+      gold: 'Very Trusted',
       green: 'Looks Genuine',
-      yellow: 'Some Flags',
+      yellow: 'Low Confidence',
       red: 'Suspicious'
     };
     const levelLabel = levelLabels[trust.level] || 'Unknown';
