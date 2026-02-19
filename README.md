@@ -1,6 +1,6 @@
 # TrueVoice for Reddit
 
-A Chrome extension that helps you know who's really behind every Reddit comment. Spot bots, corporate shills, and real people at a glance.
+A Chrome extension that spots bots, corporate shills, and astroturf accounts on Reddit. Trust badges show account age, karma, and behavioral signals at a glance.
 
 ## What It Shows
 
@@ -18,18 +18,25 @@ A Chrome extension that helps you know who's really behind every Reddit comment.
 
 ## Indicators
 
-Each account gets a score from 0–11 based on:
+Each account gets a trust score (shown as a percentage) based on:
 
 | Metric | Points | What it measures |
 |---|---|---|
 | Account age | 0–3 | Older accounts score higher |
 | Karma | 0–3 | Total karma across posts and comments |
+| Verified email | 0–1 | Unverified accounts score lower |
 | Subreddit diversity | 0–3 | Number of unique subs in recent comments |
 | Comment variety | 0–2 | Low repetition in comment text |
 
-**Green (7+):** Established account with diverse, organic activity.
-**Yellow (4–6):** Newer account or limited activity diversity.
-**Red (0–3):** Very new, low karma, or repetitive posting patterns.
+**Green (≥67%):** Established account with diverse, organic activity.
+**Yellow (42–66%):** Newer account or limited activity diversity.
+**Red (≤41%):** Very new, low karma, or repetitive posting patterns.
+
+Flags (no points deducted, shown separately):
+- High link-to-comment karma ratio — common shill/promoter pattern
+- Generic username pattern — 4+ trailing digits
+- Posts in very few subreddits
+- Burst posting detected — 15+ comments in a 24h window
 
 ## Performance
 

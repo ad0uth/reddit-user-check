@@ -2,15 +2,16 @@
 // Handles Reddit API calls and caching
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
-const REQUEST_DELAY_MS = 200; // Polite rate limiting between requests
+const REQUEST_DELAY_MS = 100; // Delay between requests per worker
+const MAX_CONCURRENT = 3; // Parallel request workers
 
-// Queue to serialize Reddit API requests and respect rate limits
+// Queue with concurrent workers for Reddit API requests
 const requestQueue = [];
-let isProcessingQueue = false;
+let activeWorkers = 0;
 
 async function processQueue() {
-  if (isProcessingQueue) return;
-  isProcessingQueue = true;
+  if (activeWorkers >= MAX_CONCURRENT || requestQueue.length === 0) return;
+  activeWorkers++;
 
   while (requestQueue.length > 0) {
     const { url, resolve, reject } = requestQueue.shift();
@@ -26,24 +27,26 @@ async function processQueue() {
       }
       if (!response.ok) {
         reject(new Error(`HTTP ${response.status}`));
-        continue;
+      } else {
+        const data = await response.json();
+        resolve(data);
       }
-      const data = await response.json();
-      resolve(data);
     } catch (err) {
       reject(err);
     }
-    // Polite delay between requests
     await sleep(REQUEST_DELAY_MS);
   }
 
-  isProcessingQueue = false;
+  activeWorkers--;
 }
 
 function queuedFetch(url) {
   return new Promise((resolve, reject) => {
     requestQueue.push({ url, resolve, reject });
-    processQueue();
+    // Spin up workers up to MAX_CONCURRENT
+    for (let i = activeWorkers; i < MAX_CONCURRENT; i++) {
+      processQueue();
+    }
   });
 }
 
@@ -310,6 +313,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   if (msg.type === 'computeTrustScore') {
     const trust = computeTrustScore(msg.about, msg.comments);
+    sendResponse({ ok: true, data: trust });
+    return false;
+  }
+
+  if (msg.type === 'computeQuickTrust') {
+    // Preliminary score from about data only (no comment analysis)
+    const trust = computeTrustScore(msg.about, null);
     sendResponse({ ok: true, data: trust });
     return false;
   }

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "TrueVoice for Reddit",
   "version": "1.0.0",
-  "description": "Know who's really behind every Reddit comment. Spot bots, shills, and real people at a glance.",
+  "description": "Spot bots, shills, and low-quality accounts on Reddit. Trust badges show account age, karma, and behavior at a glance.",
   "permissions": [
     "storage"
   ],

@@ -4,13 +4,13 @@
 TrueVoice for Reddit
 
 ## Short Description (132 char max)
-Know who's really behind every Reddit comment. Spot bots, shills, and real people at a glance.
+Spot bots, shills, and astroturf accounts on Reddit. Trust badges show account age, karma, and behavior signals at a glance.
 
 ## Detailed Description
 
-Is that comment from a real person, a bot, or a corporate shill? Now you'll know.
+Reddit is full of bots, corporate shills, and astroturf accounts — TrueVoice helps you filter the noise.
 
-TrueVoice for Reddit adds a trust badge next to every username so you can instantly tell who's worth listening to. Hover for a deep breakdown of account authenticity — age, karma, behavior patterns, and more.
+TrueVoice for Reddit adds a trust badge next to every username so you can quickly assess account credibility. Hover for a full breakdown — account age, karma, behavioral patterns, recent comments, and more.
 
 WHAT YOU GET:
 
