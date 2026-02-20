@@ -148,13 +148,7 @@
     const dot = badge.querySelector('.tv-dot');
     if (dot) {
       dot.classList.remove('tv-dot--pending');
-      if (level === 'gold') {
-        // Replace dot with a gold star
-        dot.className = 'tv-star';
-        dot.textContent = '\u2605';
-      } else {
-        dot.classList.add(`tv-dot--${level}`);
-      }
+      dot.classList.add(`tv-dot--${level}`);
     }
 
     const text = badge.querySelector('.tv-badge-text');
@@ -186,8 +180,8 @@
 
     // Trust level label
     const levelLabels = {
-      gold: 'Very Trusted',
-      green: 'Looks Genuine',
+      green: 'Trusted',
+      yellow: 'Moderate',
       red: 'Suspicious'
     };
     const levelLabel = levelLabels[trust.level] || 'Unknown';
@@ -227,7 +221,7 @@
     if (comments) {
       // Subreddit diversity bar
       const diversityPct = Math.min(100, Math.round((comments.uniqueSubreddits / 10) * 100));
-      const diversityColor = comments.uniqueSubreddits >= 6 ? 'green' : comments.uniqueSubreddits >= 3 ? 'green' : 'red';
+      const diversityColor = comments.uniqueSubreddits >= 6 ? 'green' : comments.uniqueSubreddits >= 3 ? 'yellow' : 'red';
 
       metricsHtml += `
         <div class="tv-metric">
@@ -238,7 +232,7 @@
       `;
 
       // Repetition bar
-      const repColor = comments.repetitionScore < 20 ? 'green' : comments.repetitionScore < 40 ? 'green' : 'red';
+      const repColor = comments.repetitionScore < 20 ? 'green' : comments.repetitionScore < 40 ? 'yellow' : 'red';
       metricsHtml += `
         <div class="tv-metric">
           <span class="tv-metric-label">Comment Variety</span>

@@ -15,8 +15,8 @@ TrueVoice for Reddit adds a trust badge next to every username so you can quickl
 WHAT YOU GET:
 
 Inline badges next to every username with account age and karma
-- Gold star: Very trusted — top-scoring established account
-- Green dot: Looks genuine — active account with reasonable history
+- Green dot: Trusted — established account with strong track record
+- Yellow dot: Moderate — active account with some history
 - Red dot: Suspicious — very new, low karma, or repetitive patterns
 
 Detailed hover card with:
