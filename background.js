@@ -286,13 +286,13 @@ function computeTrustScore(about, comments) {
   let level;
   if (comments) {
     // Full scoring with all data — max 12 points
-    if (score >= 8) level = 'gold';
-    else if (score >= 5) level = 'green';
+    if (score >= 8) level = 'green';
+    else if (score >= 5) level = 'yellow';
     else level = 'red';
   } else {
     // Quick scoring from about data only — max 7 points
-    if (score >= 6) level = 'gold';
-    else if (score >= 4) level = 'green';
+    if (score >= 5) level = 'green';
+    else if (score >= 3) level = 'yellow';
     else level = 'red';
   }
 

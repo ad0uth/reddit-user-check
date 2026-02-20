@@ -145,8 +145,8 @@
       flex-shrink: 0;
     }
 
-    .legend-star { color: #e8b730; font-size: 10px; line-height: 1; flex-shrink: 0; }
     .legend-dot--green { background: #46d160; }
+    .legend-dot--yellow { background: #f0b429; }
     .legend-dot--red { background: #e5534b; }
 
     .clear-cache-btn {
@@ -243,12 +243,12 @@
       <h2>Indicators</h2>
       <div class="legend">
         <div class="legend-item">
-          <span class="legend-star">&#9733;</span>
-          <span>Very Trusted &mdash; top-scoring established account</span>
+          <span class="legend-dot legend-dot--green"></span>
+          <span>Trusted &mdash; established account with strong track record</span>
         </div>
         <div class="legend-item">
-          <span class="legend-dot legend-dot--green"></span>
-          <span>Looks Genuine &mdash; active account with diverse history</span>
+          <span class="legend-dot legend-dot--yellow"></span>
+          <span>Moderate &mdash; active account with some history</span>
         </div>
         <div class="legend-item">
           <span class="legend-dot legend-dot--red"></span>
