@@ -74,11 +74,6 @@
   box-shadow: 0 0 3px rgba(70, 209, 96, 0.4);
 }
 
-.tv-dot--yellow {
-  background: #f0b429;
-  box-shadow: 0 0 3px rgba(240, 180, 41, 0.4);
-}
-
 .tv-dot--red {
   background: #e5534b;
   box-shadow: 0 0 3px rgba(229, 83, 75, 0.4);
@@ -246,11 +241,6 @@ html[data-darkreader-scheme="dark"] .tv-tooltip {
   color: #1a7f37;
 }
 
-.tv-trust--yellow {
-  background: rgba(240, 180, 41, 0.12);
-  color: #9a6700;
-}
-
 .tv-trust--red {
   background: rgba(229, 83, 75, 0.12);
   color: #cf222e;
@@ -262,9 +252,6 @@ html[data-darkreader-scheme="dark"] .tv-tooltip {
   }
   .tv-trust--green {
     color: #56d364;
-  }
-  .tv-trust--yellow {
-    color: #e3b341;
   }
   .tv-trust--red {
     color: #ff6b6b;

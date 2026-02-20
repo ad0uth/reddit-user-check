@@ -39,7 +39,6 @@ BRAND_PRIMARY = (59, 130, 246)    # #3B82F6 - vibrant blue
 BRAND_SECONDARY = (139, 92, 246)  # #8B5CF6 - vivid purple
 BRAND_DARK = (30, 41, 82)         # dark accent
 TRUST_GREEN = (70, 209, 96)
-TRUST_YELLOW = (240, 180, 41)
 TRUST_RED = (229, 83, 75)
 
 

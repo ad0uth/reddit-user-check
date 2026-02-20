@@ -5,7 +5,7 @@ A Chrome extension that spots bots, corporate shills, and astroturf accounts on 
 ## What It Shows
 
 **Inline badge** next to every username:
-- A colored indicator dot (green / yellow / red)
+- A colored indicator dot (gold star / green / red)
 - Account age and karma in compact form (e.g., `2y · 8.3k`)
 
 **Hover tooltip** with detailed breakdown:
@@ -28,9 +28,9 @@ Each account gets a trust score (shown as a percentage) based on:
 | Subreddit diversity | 0–3 | Number of unique subs in recent comments |
 | Comment variety | 0–2 | Low repetition in comment text |
 
-**Green (≥67%):** Established account with diverse, organic activity.
-**Yellow (42–66%):** Newer account or limited activity diversity.
-**Red (≤41%):** Very new, low karma, or repetitive posting patterns.
+**Gold (≥83%):** Top-scoring established account with excellent track record.
+**Green (≥33%):** Active account with reasonable history and diversity.
+**Red (<33%):** Very new, low karma, or repetitive posting patterns.
 
 Flags (no points deducted, shown separately):
 - High link-to-comment karma ratio — common shill/promoter pattern
