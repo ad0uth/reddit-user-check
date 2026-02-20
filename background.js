@@ -283,13 +283,20 @@ function computeTrustScore(about, comments) {
     }
   }
 
-  // Max possible: 12 points (+1 from verified email vs old 11)
-  // Gold: 11+, Green: 8-10, Yellow: 5-7, Red: 0-4
   let level;
-  if (score >= 11) level = 'gold';
-  else if (score >= 8) level = 'green';
-  else if (score >= 5) level = 'yellow';
-  else level = 'red';
+  if (comments) {
+    // Full scoring with all data — max 12 points
+    if (score >= 11) level = 'gold';
+    else if (score >= 8) level = 'green';
+    else if (score >= 5) level = 'yellow';
+    else level = 'red';
+  } else {
+    // Quick scoring from about data only — max 7 points
+    // Use scaled thresholds so normal accounts don't show red
+    if (score >= 6) level = 'green';
+    else if (score >= 4) level = 'yellow';
+    else level = 'red';
+  }
 
   const percent = Math.round((score / 12) * 100);
   return { score, maxScore: 12, percent, level, flags };
