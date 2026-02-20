@@ -246,9 +246,9 @@ function computeTrustScore(about, comments) {
   else { flags.push('New account'); }
 
   // Karma scoring (0-3 points)
-  if (about.totalKarma >= 10000) { score += 3; }
-  else if (about.totalKarma >= 1000) { score += 2; }
-  else if (about.totalKarma >= 100) { score += 1; }
+  if (about.totalKarma >= 5000) { score += 3; }
+  else if (about.totalKarma >= 500) { score += 2; }
+  else if (about.totalKarma >= 50) { score += 1; }
   else { flags.push('Very low karma'); }
 
   // Verified email (+1 point — unverified is a mild red flag)
@@ -286,15 +286,13 @@ function computeTrustScore(about, comments) {
   let level;
   if (comments) {
     // Full scoring with all data — max 12 points
-    if (score >= 11) level = 'gold';
-    else if (score >= 8) level = 'green';
-    else if (score >= 5) level = 'yellow';
+    if (score >= 10) level = 'gold';
+    else if (score >= 4) level = 'green';
     else level = 'red';
   } else {
     // Quick scoring from about data only — max 7 points
     // Use scaled thresholds so normal accounts don't show red
-    if (score >= 6) level = 'green';
-    else if (score >= 4) level = 'yellow';
+    if (score >= 4) level = 'green';
     else level = 'red';
   }
 

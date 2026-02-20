@@ -39,7 +39,6 @@ def lerp_color(c1, c2, t):
 BRAND_PRIMARY   = (59, 130, 246)    # #3B82F6 blue
 BRAND_SECONDARY = (139, 92, 246)    # #8B5CF6 purple
 TRUST_GREEN     = (70, 209, 96)
-TRUST_YELLOW    = (240, 180, 41)
 TRUST_RED       = (229, 83, 75)
 
 # Reddit-light UI palette
@@ -203,7 +202,6 @@ def draw_promo(W, H):
         # Dot color
         dot_colors = {
             'green':  TRUST_GREEN,
-            'yellow': TRUST_YELLOW,
             'red':    TRUST_RED,
         }
         dc = dot_colors.get(dot_class, TEXT_DIM)
@@ -227,8 +225,8 @@ def draw_promo(W, H):
     draw_comment_row(card_y1 + 42, 45, TRUST_GREEN, '6y · 5.2k', 'green',
                      line1_w=190, line2_w=155)
 
-    # Row 2 — yellow (limited), highlighted (hovered)
-    draw_comment_row(card_y1 + 100, 38, TRUST_YELLOW, '8mo · 312', 'yellow',
+    # Row 2 — green (moderate), highlighted (hovered)
+    draw_comment_row(card_y1 + 100, 38, TRUST_GREEN, '8mo · 312', 'green',
                      line1_w=180, line2_w=140, highlighted=True)
 
     # Row 3 — red (suspicious, indented reply)

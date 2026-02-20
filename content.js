@@ -188,7 +188,6 @@
     const levelLabels = {
       gold: 'Very Trusted',
       green: 'Looks Genuine',
-      yellow: 'Low Confidence',
       red: 'Suspicious'
     };
     const levelLabel = levelLabels[trust.level] || 'Unknown';
@@ -228,7 +227,7 @@
     if (comments) {
       // Subreddit diversity bar
       const diversityPct = Math.min(100, Math.round((comments.uniqueSubreddits / 10) * 100));
-      const diversityColor = comments.uniqueSubreddits >= 6 ? 'green' : comments.uniqueSubreddits >= 3 ? 'yellow' : 'red';
+      const diversityColor = comments.uniqueSubreddits >= 6 ? 'green' : comments.uniqueSubreddits >= 3 ? 'green' : 'red';
 
       metricsHtml += `
         <div class="tv-metric">
@@ -239,7 +238,7 @@
       `;
 
       // Repetition bar
-      const repColor = comments.repetitionScore < 20 ? 'green' : comments.repetitionScore < 40 ? 'yellow' : 'red';
+      const repColor = comments.repetitionScore < 20 ? 'green' : comments.repetitionScore < 40 ? 'green' : 'red';
       metricsHtml += `
         <div class="tv-metric">
           <span class="tv-metric-label">Comment Variety</span>
@@ -392,7 +391,7 @@
         type: 'computeQuickTrust',
         about
       });
-      const trust = trustRes?.ok ? trustRes.data : { score: 0, maxScore: 12, percent: 0, level: 'yellow', flags: [] };
+      const trust = trustRes?.ok ? trustRes.data : { score: 0, maxScore: 12, percent: 0, level: 'green', flags: [] };
 
       userDataCache.set(username, { about, comments: null, trust });
       updateBadge(badge, about, trust.level);
