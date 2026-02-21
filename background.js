@@ -282,14 +282,26 @@ function computeTrustScore(about, comments) {
     if (comments.burstScore >= 15) {
       flags.push('Burst posting detected');
     }
+
+    // Young account + heavy activity = classic bot/shill pattern
+    if (ageMonths < 12 && comments.burstScore >= 10) {
+      score -= 2;
+      flags.push('High activity on young account');
+    }
   }
 
   let level;
   if (comments) {
-    // Full scoring with all data — max 12 points
+    // Full scoring with all data
     if (score >= 8) level = 'green';
     else if (score >= 5) level = 'yellow';
     else level = 'red';
+
+    // Veteran override: 5+ year account with any comment history
+    // is almost certainly a real person — not a bot or shill
+    if (ageMonths >= 60 && comments.count > 0) {
+      level = 'green';
+    }
   } else {
     // Quick scoring from about data only — max 7 points
     // Thresholds are more lenient than full scoring since we have less data
