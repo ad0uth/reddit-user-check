@@ -238,11 +238,12 @@ function computeTrustScore(about, comments) {
   let score = 0;
   const flags = [];
 
-  // Account age scoring (0-3 points)
+  // Account age scoring (0-5 points)
   const ageMonths = (Date.now() / 1000 - about.created) / (30 * 86400);
-  if (ageMonths >= 24) { score += 3; }
-  else if (ageMonths >= 12) { score += 2; }
-  else if (ageMonths >= 6) { score += 1; }
+  if (ageMonths >= 60) { score += 5; }       // 5+ years — veteran account
+  else if (ageMonths >= 24) { score += 3; }  // 2+ years
+  else if (ageMonths >= 12) { score += 2; }  // 1+ year
+  else if (ageMonths >= 6) { score += 1; }   // 6+ months
   else { flags.push('New account'); }
 
   // Karma scoring (0-3 points)
