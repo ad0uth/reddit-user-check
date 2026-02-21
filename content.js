@@ -457,12 +457,17 @@
         el.addEventListener('mouseleave', hideHandler);
       }
 
-      // Phase 1: Fetch about data when badge enters viewport
+      // Phase 1: Fetch about data when badge enters viewport.
+      // After Phase 1 completes, automatically kick off Phase 2 (comment
+      // analysis) after a short delay so the full trust score is shown
+      // without requiring the user to hover over every badge.
       const observer = new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             obs.unobserve(entry.target);
-            fetchAboutAndScore(username, badge);
+            fetchAboutAndScore(username, badge).then(() => {
+              setTimeout(() => fetchCommentsAndRefine(username, badge), 1500);
+            });
           }
         });
       }, { rootMargin: '200px' });

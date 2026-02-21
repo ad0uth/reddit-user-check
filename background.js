@@ -291,8 +291,9 @@ function computeTrustScore(about, comments) {
     else level = 'red';
   } else {
     // Quick scoring from about data only — max 7 points
-    if (score >= 5) level = 'green';
-    else if (score >= 3) level = 'yellow';
+    // Thresholds are more lenient than full scoring since we have less data
+    if (score >= 4) level = 'green';
+    else if (score >= 2) level = 'yellow';
     else level = 'red';
   }
 
